@@ -1,0 +1,18 @@
+<h1><%= @user.username %>'s Liked Photos</h1>
+
+<% if @liked_photos.empty? %>
+  <p>No liked photos to show.</p>
+<% end %>
+
+<% @liked_photos.each do |photo| %>
+  <div style="margin-bottom: 20px;">
+    <% if photo.image.attached? %>
+      <%= image_tag photo.image, style: "max-width: 300px;" %>
+    <% end %>
+
+    <p><strong>Caption:</strong> <%= photo.caption %></p>
+    <p><strong>Posted by:</strong> <%= link_to photo.owner.username, user_profile_path(photo.owner.username) %></p>
+    <p><strong>Posted:</strong> <%= time_ago_in_words(photo.created_at) %> ago</p>
+    <%= link_to "View Photo", photo_path(photo) %>
+  </div>
+<% end %>

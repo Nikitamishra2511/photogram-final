@@ -1,0 +1,17 @@
+<h1>Upload a New Photo</h1>
+
+<%= form_with model: @photo, local: true do |form| %>
+  <div>
+    <%= form.label :image, "Image" %><br>
+    <%= form.file_field :image %>
+  </div>
+
+  <div>
+    <%= form.label :caption, "Caption" %><br>
+    <%= form.text_area :caption %>
+  </div>
+
+  <div>
+    <%= form.submit "Add Photo" %>
+  </div>
+<% end %>

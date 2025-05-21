@@ -1,0 +1,19 @@
+<h1>All Photos</h1>
+
+<% if user_signed_in? %>
+  <%= link_to "Add New Photo", new_photo_path %>
+<% end %>
+
+<% @photos.each do |photo| %>
+  <div style="margin-bottom: 20px;">
+    <% if photo.image.attached? %>
+      <%= image_tag photo.image, style: "max-width: 300px;" %>
+    <% end %>
+
+    <p><strong>Caption:</strong> <%= photo.caption %></p>
+    <p><strong>Posted by:</strong> <%= link_to photo.owner.username, user_profile_path(photo.owner.username) %></p>
+    <p><strong>Likes:</strong> <%= photo.likes_count %> | <strong>Comments:</strong> <%= photo.comments_count %></p>
+    <p><strong>Posted:</strong> <%= time_ago_in_words(photo.created_at) %> ago</p>
+    <%= link_to "View", photo_path(photo) %>
+  </div>
+<% end %>

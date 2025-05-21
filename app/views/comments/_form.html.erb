@@ -1,0 +1,5 @@
+<%= form_with url: comments_path, method: :post, local: true do |form| %>
+  <%= form.hidden_field :photo_id, value: @photo.id %>
+  <%= form.text_area :body, placeholder: "Write a comment..." %><br>
+  <%= form.submit "Post Comment" %>
+<% end %>
