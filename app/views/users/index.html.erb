@@ -5,9 +5,8 @@
     <tr>
       <th>Username</th>
       <th>Private?</th>
-
       <% if user_signed_in? %>
-        <th>Follow/Unfollow</th>
+        <th>Follow</th>
       <% end %>
     </tr>
   </thead>
@@ -15,15 +14,25 @@
   <tbody>
     <% @users.each do |user| %>
       <tr>
-        <td><%= user.username %></td>
+        <td><%= link_to user.username, user_profile_path(user.username) %></td>
         <td><%= user.private? ? "Yes" : "No" %></td>
 
-        <% if user_signed_in? && user != current_user %>
+        <% if user_signed_in? && current_user != user %>
+          <% fr = FollowRequest.find_by(sender: current_user, recipient: user) %>
           <td>
-            <%= render partial: "follow_requests/follow_button", locals: { user: user } %>
+            <% if fr.nil? %>
+              <%= button_to "Follow", follow_requests_path(recipient_id: user.id), method: :post %>
+            <% elsif fr.status == "pending" %>
+              Request sent
+              <%= button_to "Cancel", follow_request_path(fr), method: :delete %>
+            <% elsif fr.status == "accepted" %>
+              <%= link_to "Unfollow", follow_request_path(fr), method: :delete %>
+            <% elsif fr.status == "rejected" %>
+              <!-- Do nothing -->
+            <% end %>
           </td>
-        <% elsif user_signed_in? %>
-          <td>—</td>
+        <% elsif user_signed_in? && current_user == user %>
+          <td>It's you!</td>
         <% end %>
       </tr>
     <% end %>

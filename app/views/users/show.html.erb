@@ -7,30 +7,31 @@
 
   <% if fr.nil? %>
     <%= button_to "Follow", follow_requests_path(recipient_id: @user.id), method: :post %>
-
   <% elsif fr.status == "pending" %>
-    Request sent
+    <p>Request sent</p>
     <%= button_to "Cancel", follow_request_path(fr), method: :delete %>
-
   <% elsif fr.status == "accepted" %>
     <%= button_to "Unfollow", follow_request_path(fr), method: :delete %>
-
   <% elsif fr.status == "rejected" %>
-    Rejected
+    <p>Request Rejected</p>
   <% end %>
 <% end %>
 
 <% if user_signed_in? && current_user == @user && @user.private? %>
   <h3>Pending Follow Requests</h3>
-  <ul>
-    <% @pending_requests.each do |request| %>
-      <li>
-        <%= request.sender.username %>
-        <%= button_to "Accept", follow_request_path(request, status: "accepted"), method: :patch %>
-        <%= button_to "Reject", follow_request_path(request, status: "rejected"), method: :patch %>
-      </li>
-    <% end %>
-  </ul>
+  <% if @pending_requests.any? %>
+    <ul>
+      <% @pending_requests.each do |request| %>
+        <li>
+          <strong><%= request.sender.username %></strong>
+          <%= button_to "Accept", follow_request_path(request, status: "accepted"), method: :patch %>
+          <%= button_to "Reject", follow_request_path(request, status: "rejected"), method: :patch %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No pending requests</p>
+  <% end %>
 <% end %>
 
 <h3>Stats</h3>
@@ -42,8 +43,10 @@
 
 <h3><%= @user.username %>'s Photos</h3>
 <% @photos.each do |photo| %>
-  <div>
-    <%= image_tag photo.image if photo.image.attached? %>
+  <div style="margin-bottom: 20px;">
+    <% if photo.image.present? %>
+      <%= image_tag photo.image %>
+    <% end %>
     <p><%= photo.caption %></p>
     <p><strong>Likes:</strong> <%= photo.likes_count %></p>
     <p>Posted: <%= time_ago_in_words(photo.created_at) %> ago</p>

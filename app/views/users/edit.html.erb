@@ -1,0 +1,17 @@
+<h1>Edit Your Profile</h1>
+
+<%= form_with model: @user, url: user_path, method: :patch, local: true do |form| %>
+  <div>
+    <%= form.label :username, "Username" %><br>
+    <%= form.text_field :username %>
+  </div>
+
+  <div>
+    <%= form.label :private, "Private account?" %><br>
+    <%= form.check_box :private %>
+  </div>
+
+  <div>
+    <%= form.submit "Update Profile" %>
+  </div>
+<% end %>

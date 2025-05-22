@@ -1,25 +1,14 @@
 class CommentsController < ApplicationController
   def create
     @comment = Comment.new
-    @comment.body = params.fetch(:body)
-    @comment.photo_id = params.fetch(:photo_id)
+    @comment.photo_id = params[:photo_id]
     @comment.author_id = current_user.id
+    @comment.body = params[:body]
 
     if @comment.save
-      redirect_to photo_path(@comment.photo_id), notice: "Comment added."
+      redirect_to photo_path(@comment.photo), notice: "Comment posted successfully."
     else
-      redirect_to photo_path(@comment.photo_id), alert: "Unable to add comment."
-    end
-  end
-
-  def destroy
-    @comment = Comment.find(params.fetch(:id))
-
-    if @comment.author_id == current_user.id
-      @comment.destroy
-      redirect_to photo_path(@comment.photo_id), alert: "Comment deleted."
-    else
-      redirect_to photo_path(@comment.photo_id), alert: "Unauthorized action."
+      redirect_to photo_path(@comment.photo), alert: "Failed to post comment."
     end
   end
 end

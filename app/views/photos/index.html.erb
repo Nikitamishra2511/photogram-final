@@ -1,25 +1,45 @@
 <h1>All public photos</h1>
 
-<%= form_with url: photos_path, method: :post, local: true, html: { enctype: "multipart/form-data" } do |form| %>
-  <div>
-    <%= form.label :image, "Image" %><br>
-    <%= form.file_field :image %>
-  </div>
-
-  <div>
-    <%= form.label :caption, "Caption" %><br>
-    <%= form.text_area :caption %>
-  </div>
-
-  <div>
-    <%= form.submit "Add photo" %>
-  </div>
-<% end %>
-
 <% @photos.each do |photo| %>
   <div>
-    <%= image_tag(photo.image) if photo.image.present? %>
-    <p><%= photo.caption %></p>
-    <p><%= link_to "Show", photo_path(photo) %></p>
+    <% if photo.valid_image_url? %>
+      <%= image_tag photo.image, alt: "Photo" %>
+    <% end %>
+
+    <p><strong>Owner:</strong> <%= link_to photo.owner.username, user_profile_path(photo.owner.username) %></p>
+    <p><strong>Caption:</strong> <%= photo.caption %></p>
+    <p><strong>Posted:</strong> <%= time_ago_in_words(photo.created_at) %> ago</p>
+    <p><strong>Likes:</strong> <%= photo.likes_count %></p>
+    <p><%= pluralize(photo.comments_count, "comment") %></p>
+
+    <p><%= link_to "Details", photo_path(photo) %></p>
+
+    <% if user_signed_in? && current_user == photo.owner %>
+      <p>
+        <%= link_to "Edit", edit_photo_path(photo) %> |
+        <%= link_to "Delete this photo", photo_path(photo), method: :delete, data: { confirm: "Are you sure?" } %>
+      </p>
+    <% end %>
   </div>
+  <hr>
+<% end %>
+
+<% if user_signed_in? %>
+  <h2>Add a new photo</h2>
+
+  <%= form_with model: @new_photo, url: photos_path, local: true do |form| %>
+    <div>
+      <%= form.label :image, "Image" %><br>
+      <%= form.text_field :image %>
+    </div>
+
+    <div>
+      <%= form.label :caption, "Caption" %><br>
+      <%= form.text_field :caption %>
+    </div>
+
+    <div>
+      <%= form.submit "Add photo" %>
+    </div>
+  <% end %>
 <% end %>

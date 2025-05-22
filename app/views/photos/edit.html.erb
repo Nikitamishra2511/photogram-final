@@ -1,16 +1,10 @@
+<h2>Edit Photo</h2>
 
-<h1>Edit Photo</h1>
-
-<%= form_with model: @photo, local: true do |form| %>
-  <p>
-    <%= form.label :image %><br>
-    <%= form.text_field :image %>
-  </p>
+<%= form_with(model: @photo, url: photo_path(@photo), method: :patch) do |form| %>
   <p>
     <%= form.label :caption %><br>
-    <%= form.text_area :caption %>
+    <%= form.text_field :caption %>
   </p>
-  <p>
-    <%= form.submit "Update Photo" %>
-  </p>
+
+  <%= form.submit "Update photo" %>
 <% end %>
