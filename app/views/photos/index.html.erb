@@ -18,7 +18,7 @@
 
 <% @photos.each do |photo| %>
   <div>
-    <%= image_tag url_for(photo.image) if photo.image.attached? %>
+    <%= image_tag(photo.image) if photo.image.present? %>
     <p><%= photo.caption %></p>
     <p><%= link_to "Show", photo_path(photo) %></p>
   </div>
