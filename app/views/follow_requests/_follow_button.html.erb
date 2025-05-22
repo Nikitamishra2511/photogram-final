@@ -1,0 +1,21 @@
+<% existing_request = FollowRequest.where(sender_id: current_user.id, recipient_id: user.id).first %>
+
+<% if existing_request.nil? %>
+  <%= form_with url: follow_requests_path, method: :post, local: true do |f| %>
+    <%= f.hidden_field :recipient_id, value: user.id %>
+    <%= f.submit "Follow" %>
+  <% end %>
+
+<% elsif existing_request.status == "accepted" %>
+  <%= button_to "Unfollow", follow_request_path(existing_request), method: :delete %>
+
+<% elsif existing_request.status == "pending" %>
+  Request sent |
+  <%= button_to "Cancel", follow_request_path(existing_request), method: :delete %>
+
+<% elsif existing_request.status == "rejected" %>
+  <%= form_with url: follow_requests_path, method: :post, local: true do |f| %>
+    <%= f.hidden_field :recipient_id, value: user.id %>
+    <%= f.submit "Follow again" %>
+  <% end %>
+<% end %>

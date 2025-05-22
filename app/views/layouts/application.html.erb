@@ -2,10 +2,23 @@
 <html>
   <head>
     <title>Photogram Final</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
   <body>
+    <turbo-frame id="flash">
+      <% if notice %>
+        <p class="notice"><%= notice %></p>
+      <% end %>
+
+      <% if alert %>
+        <p class="alert"><%= alert %></p>
+      <% end %>
+    </turbo-frame>
+
     <%= yield %>
   </body>
 </html>

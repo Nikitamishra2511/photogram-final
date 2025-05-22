@@ -16,6 +16,5 @@ class Photo < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_many :likes, dependent: :destroy
 
-  has_one_attached :image  # 👈 This is the line you're adding!
+  validates :caption, presence: true
 end
-

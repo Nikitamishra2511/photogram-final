@@ -1,42 +1,41 @@
-<h1>Photo Details</h1>
 
-<% if @photo.image.attached? %>
-  <%= image_tag @photo.image, style: "max-width: 500px;" %>
+<% if @photo.image.present? %>
+  <%= image_tag @photo.image %>
 <% end %>
 
-<p><strong>Caption:</strong> <%= @photo.caption %></p>
-<p><strong>Posted by:</strong> <%= link_to @photo.owner.username, user_profile_path(@photo.owner.username) %></p>
-<p><strong>Posted:</strong> <%= time_ago_in_words(@photo.created_at) %> ago</p>
-<p><strong>Likes:</strong> <%= @photo.likes_count %> | <strong>Comments:</strong> <%= @photo.comments_count %></p>
+<p><%= @photo.caption %></p>
+<p>Posted by <%= link_to @photo.owner.username, "/users/#{@photo.owner.username}" %></p>
+<p><%= pluralize(@photo.likes_count, "like") %> | <%= pluralize(@photo.comments_count, "comment") %></p>
+<p><%= @photo.created_at.strftime("Posted on %B %d, %Y at %l:%M %p") %></p>
 
-<% if user_signed_in? %>
-  <% if @photo.owner == current_user %>
-    <%= link_to "Edit", edit_photo_path(@photo) %> |
-    <%= button_to "Delete this photo", photo_path(@photo), method: :delete, data: { confirm: "Are you sure?" } %>
-  <% end %>
-
-  <hr>
-
-  <% if @like.present? %>
-    <%= button_to "Unlike", like_path(@like), method: :delete %>
-  <% else %>
-    <%= button_to "Like", likes_path(photo_id: @photo.id), method: :post %>
-  <% end %>
-
-  <h2>Add a Comment</h2>
-  <%= form_with url: comments_path, method: :post do |form| %>
-    <%= form.hidden_field :photo_id, value: @photo.id %>
-    <%= form.text_area :body, placeholder: "Write a comment..." %><br>
-    <%= form.submit "Post Comment" %>
-  <% end %>
+<% if current_user == @photo.owner %>
+  <%= link_to "Edit", edit_photo_path(@photo) %>
+  <%= link_to "Delete this photo", photo_path(@photo), method: :delete, data: { confirm: "Are you sure?" } %>
 <% end %>
 
-<h2>Comments</h2>
-<% @comments.each do |comment| %>
+<h3>Likes</h3>
+<%= form_with url: likes_path, method: :post, local: true do |form| %>
+  <%= form.hidden_field :photo_id, value: @photo.id %>
+  <%= form.hidden_field :fan_id, value: current_user.id %>
+  <%= form.submit "Like" %>
+<% end %>
+
+<% if @photo.likes.exists?(fan_id: current_user.id) %>
+  <% user_like = @photo.likes.find_by(fan_id: current_user.id) %>
+  <%= link_to "Unlike", like_path(user_like), method: :delete, data: { turbo_confirm: "Are you sure?" } %>
+<% end %>
+
+<h3>Comments</h3>
+<%= form_with url: comments_path, method: :post, local: true do |form| %>
+  <%= form.hidden_field :photo_id, value: @photo.id %>
+  <%= form.hidden_field :author_id, value: current_user.id %>
+  <%= form.text_area :body, placeholder: "Write a comment..." %>
+  <%= form.submit "Post Comment" %>
+<% end %>
+
+<% @photo.comments.each do |comment| %>
   <p>
-    <strong><%= comment.author.username %>:</strong> <%= comment.body %>
-    <% if user_signed_in? && comment.author == current_user %>
-      <%= button_to "Delete", comment_path(comment), method: :delete %>
-    <% end %>
+    <strong><%= comment.author.username %></strong>: <%= comment.body %>
   </p>
 <% end %>
+

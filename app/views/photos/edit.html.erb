@@ -1,17 +1,16 @@
+
 <h1>Edit Photo</h1>
 
 <%= form_with model: @photo, local: true do |form| %>
-  <div>
-    <%= form.label :image, "Replace Image" %><br>
-    <%= form.file_field :image %>
-  </div>
-
-  <div>
+  <p>
+    <%= form.label :image %><br>
+    <%= form.text_field :image %>
+  </p>
+  <p>
     <%= form.label :caption %><br>
     <%= form.text_area :caption %>
-  </div>
-
-  <div>
+  </p>
+  <p>
     <%= form.submit "Update Photo" %>
-  </div>
+  </p>
 <% end %>

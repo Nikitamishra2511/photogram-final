@@ -1,28 +1,20 @@
 Rails.application.routes.draw do
-  get 'home/index'
-  get 'follow_requests/create'
-  get 'follow_requests/update'
-  get 'follow_requests/destroy'
-  get 'likes/create'
-  get 'likes/destroy'
-  get 'comments/create'
-  get 'comments/destroy'
-  get 'photos/index'
-  get 'photos/show'
-  get 'photos/new'
-  get 'photos/create'
-  get 'photos/edit'
-  get 'photos/update'
-  get 'photos/destroy'
-  get 'users/index'
-  get 'users/show'
-  get 'users/feed'
-  get 'users/discover'
-  get 'users/liked_photos'
+  # Devise routes for user auth
   devise_for :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Defines the root path route ("/")
+  # Set root path to home page
   root "home#index"
 
-end
+  # Standard RESTful routes for core models
+  resources :photos
+  resources :comments, only: [:create, :destroy]
+  resources :likes, only: [:create, :destroy]
+  resources :follow_requests, only: [:create, :update, :destroy]
+
+  # Explicit routes for user-facing views
+  get "/users" => "users#index", as: :users
+  get "/users/:username" => "users#show", as: :user_profile
+  get "/users/:username/feed" => "users#feed", as: :user_feed
+  get "/users/:username/discover" => "users#discover", as: :user_discover
+  get "/users/:username/liked_photos" => "users#liked_photos", as: :user_liked_photos
+end  # ← THIS "end" is required

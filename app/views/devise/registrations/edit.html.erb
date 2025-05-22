@@ -4,6 +4,9 @@
   <%= f.error_notification %>
 
   <div class="form-inputs">
+    <%= f.input :username, required: false %>
+    <%= f.input :private, as: :boolean, label: "Private account?" %>
+
     <%= f.input :email, required: true, autofocus: true %>
 
     <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
@@ -14,9 +17,11 @@
                 hint: "leave it blank if you don't want to change it",
                 required: false,
                 input_html: { autocomplete: "new-password" } %>
+
     <%= f.input :password_confirmation,
                 required: false,
                 input_html: { autocomplete: "new-password" } %>
+
     <%= f.input :current_password,
                 hint: "we need your current password to confirm your changes",
                 required: true,
@@ -30,6 +35,9 @@
 
 <h3>Cancel my account</h3>
 
-<div>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
+<div>
+  Unhappy?
+  <%= button_to "Cancel my account", registration_path(resource_name), method: :delete, data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" } %>
+</div>
 
 <%= link_to "Back", :back %>

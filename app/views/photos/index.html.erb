@@ -1,19 +1,25 @@
-<h1>All Photos</h1>
+<h1>All public photos</h1>
 
-<% if user_signed_in? %>
-  <%= link_to "Add New Photo", new_photo_path %>
+<%= form_with url: photos_path, method: :post, local: true, html: { enctype: "multipart/form-data" } do |form| %>
+  <div>
+    <%= form.label :image, "Image" %><br>
+    <%= form.file_field :image %>
+  </div>
+
+  <div>
+    <%= form.label :caption, "Caption" %><br>
+    <%= form.text_area :caption %>
+  </div>
+
+  <div>
+    <%= form.submit "Add photo" %>
+  </div>
 <% end %>
 
 <% @photos.each do |photo| %>
-  <div style="margin-bottom: 20px;">
-    <% if photo.image.attached? %>
-      <%= image_tag photo.image, style: "max-width: 300px;" %>
-    <% end %>
-
-    <p><strong>Caption:</strong> <%= photo.caption %></p>
-    <p><strong>Posted by:</strong> <%= link_to photo.owner.username, user_profile_path(photo.owner.username) %></p>
-    <p><strong>Likes:</strong> <%= photo.likes_count %> | <strong>Comments:</strong> <%= photo.comments_count %></p>
-    <p><strong>Posted:</strong> <%= time_ago_in_words(photo.created_at) %> ago</p>
-    <%= link_to "View", photo_path(photo) %>
+  <div>
+    <%= image_tag url_for(photo.image) if photo.image.attached? %>
+    <p><%= photo.caption %></p>
+    <p><%= link_to "Show", photo_path(photo) %></p>
   </div>
 <% end %>
