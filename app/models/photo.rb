@@ -19,15 +19,14 @@ class Photo < ApplicationRecord
   validates :caption, presence: true
   validates :image, presence: true, if: :validate_image_required?
 
-  # Custom method to check if the image is a valid HTTP(S) URL
+  # ✅ Custom validator to ensure image is a valid HTTP(S) URL
   def valid_image_url?
     image.present? && image.match?(URI::DEFAULT_PARSER.make_regexp(%w[http https]))
   end
 
   private
 
-  # Only validate image presence if the photo is being created
   def validate_image_required?
-    new_record?
+    true # always require image in this assignment
   end
 end

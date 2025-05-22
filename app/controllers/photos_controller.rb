@@ -2,13 +2,13 @@ class PhotosController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
 
   def index
-    @photos = Photo.includes(:owner).where(owner: { private: false })
+    @photos = Photo.joins(:owner).where(users: { private: false }).order(created_at: :desc)
     @new_photo = Photo.new
   end
 
   def show
     @photo = Photo.find(params[:id])
-    @comments = @photo.comments.includes(:fan)
+    @comments = @photo.comments.includes(:author)
     @like = current_user&.likes&.find_by(photo_id: @photo.id)
   end
 
@@ -23,9 +23,10 @@ class PhotosController < ApplicationController
     @photo.comments_count = 0
 
     if @photo.save
-      redirect_to photos_path, notice: "Photo created successfully"
+      redirect_to photos_path, notice: "Photo added successfully"
     else
-      redirect_to photos_path, alert: "Photo failed to create"
+      flash[:alert] = "Photo failed to create: " + @photo.errors.full_messages.to_sentence
+      redirect_to photos_path
     end
   end
 
@@ -53,10 +54,9 @@ class PhotosController < ApplicationController
 
   def destroy
     @photo = Photo.find(params[:id])
-
     if @photo.owner == current_user
       @photo.destroy
-      redirect_to photos_path, alert: "Photo deleted successfully"
+      redirect_to photos_path, notice: "Photo deleted successfully"
     else
       redirect_to photos_path, alert: "You are not authorized for that"
     end
