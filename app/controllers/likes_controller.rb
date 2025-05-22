@@ -1,24 +1,19 @@
 class LikesController < ApplicationController
   def create
-    @like = Like.new
-    @like.photo_id = params[:photo_id]
-    @like.fan_id = current_user.id
+    like = Like.new
+    like.fan_id = current_user.id
+    like.photo_id = params.fetch("photo_id")
 
-    if @like.save
-      redirect_to photo_path(@like.photo), notice: "Like created successfully."
+    if like.save
+      redirect_to photo_path(like.photo), notice: "Like added"
     else
-      redirect_to photo_path(@like.photo), alert: "Like failed to save."
+      redirect_to photo_path(like.photo), alert: like.errors.full_messages.to_sentence
     end
   end
 
   def destroy
-    @like = Like.find(params[:id])
-
-    if @like.fan_id == current_user.id
-      @like.destroy
-      redirect_to photo_path(@like.photo), alert: "Like deleted successfully."
-    else
-      redirect_to photo_path(@like.photo), alert: "You are not authorized to unlike this photo."
-    end
+    like = Like.find(params[:id])
+    like.destroy
+    redirect_to photo_path(like.photo), notice: "Like removed"
   end
 end

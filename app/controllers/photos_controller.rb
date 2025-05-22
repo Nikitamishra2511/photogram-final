@@ -7,8 +7,8 @@ class PhotosController < ApplicationController
   end
 
   def show
-    @photo = Photo.find(params[:id])
-    @comments = @photo.comments.includes(:author)
+    @photo = Photo.includes(:owner, comments: :author, likes: :fan).find(params[:id])
+    @comments = @photo.comments
     @like = current_user&.likes&.find_by(photo_id: @photo.id)
   end
 

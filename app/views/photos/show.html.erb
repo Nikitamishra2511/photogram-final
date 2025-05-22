@@ -1,56 +1,18 @@
-<% if notice %>
-  <p class="notice"><%= notice %></p>
+<h1>Photo Details</h1>
+
+<% if @photo.image.attached? %>
+  <%= image_tag url_for(@photo.image), alt: "Photo", style: "max-width: 100%; height: auto;" %>
 <% end %>
 
-<% if alert %>
-  <p class="alert"><%= alert %></p>
-<% end %>
-
-<% if @photo.image.present? %>
-  <%= image_tag @photo.image %>
-<% end %>
-
-<p><strong><%= @photo.caption %></strong></p>
-
-<p>
-  Posted by <%= link_to @photo.owner.username, "/users/#{@photo.owner.username}" %>
-</p>
-
-<p>
-  <%= pluralize(@photo.likes_count, "like") %> |
-  <%= pluralize(@photo.comments_count, "comment") %>
-</p>
-
-<p>
-  <%= @photo.created_at.strftime("Posted on %B %d, %Y at %l:%M %p") %>
-</p>
-
-<% if current_user == @photo.owner %>
-  <p>
-    <%= link_to "Edit", edit_photo_path(@photo) %> |
-    <%= link_to "Delete this photo", photo_path(@photo), method: :delete, data: { confirm: "Are you sure?" } %>
-  </p>
-<% end %>
+<p><strong>Caption:</strong> <%= @photo.caption %></p>
+<p><strong>Owner:</strong> <%= link_to @photo.owner.username, user_profile_path(@photo.owner.username) %></p>
+<p><strong>Comments:</strong> <%= @photo.comments.count %></p>
+<p><strong>Likes:</strong> <%= @photo.likes.count %></p>
+<p><strong>Posted:</strong> <%= time_ago_in_words(@photo.created_at) %> ago</p>
 
 <hr>
 
-<h3>Likes</h3>
-
-<% if current_user.likes.exists?(photo_id: @photo.id) %>
-  <% like = current_user.likes.find_by(photo_id: @photo.id) %>
-  <%= link_to "Unlike", like_path(like), method: :delete %>
-<% else %>
-  <%= form_with(url: likes_path, method: :post) do %>
-    <%= hidden_field_tag :photo_id, @photo.id %>
-    <%= hidden_field_tag :fan_id, current_user.id %>
-    <%= submit_tag "Like" %>
-  <% end %>
-<% end %>
-
-<hr>
-
-<h3>Comments</h3>
-
+<h2>Comments</h2>
 <ul>
   <% @photo.comments.each do |comment| %>
     <li>
@@ -60,20 +22,30 @@
   <% end %>
 </ul>
 
-<%= form_with(url: comments_path, method: :post) do %>
-  <%= hidden_field_tag :photo_id, @photo.id %>
-  <%= hidden_field_tag :author_id, current_user.id %>
-  <p>
-    <label for="body">New comment:</label><br>
-    <%= text_area_tag :body %>
-  </p>
-  <%= submit_tag "Add comment" %>
+<% if user_signed_in? && current_user == @photo.owner %>
+  <%= link_to "Edit Photo", edit_photo_path(@photo) %> |
+  <%= link_to "Delete this photo", photo_path(@photo), method: :delete, data: { confirm: "Are you sure?" } %>
 <% end %>
 
 <hr>
 
-<p>
-  <%= link_to "Feed", user_feed_path(@photo.owner.username) %> |
-  <%= link_to "Liked Photos", user_liked_photos_path(@photo.owner.username) %> |
-  <%= link_to "Discover", user_discover_path(@photo.owner.username) %>
-</p>
+<% if user_signed_in? %>
+  <%= form_with model: Comment.new, url: comments_path, local: true do |form| %>
+    <%= form.hidden_field :photo_id, value: @photo.id %>
+    <p>
+      <%= form.label :body, "Add a comment:" %><br>
+      <%= form.text_area :body %>
+    </p>
+    <%= form.submit "Post Comment" %>
+  <% end %>
+
+  <% if @photo.likes.exists?(fan_id: current_user.id) %>
+    <% like = @photo.likes.find_by(fan_id: current_user.id) %>
+    <%= link_to "Unlike", like_path(like), method: :delete %>
+  <% else %>
+    <%= form_with model: Like.new, url: likes_path, local: true do |form| %>
+      <%= form.hidden_field :photo_id, value: @photo.id %>
+      <%= form.submit "Like this photo" %>
+    <% end %>
+  <% end %>
+<% end %>

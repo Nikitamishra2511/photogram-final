@@ -1,46 +1,35 @@
-<h1>All public photos</h1>
+<h1>All Public Photos</h1>
+
+<% if user_signed_in? %>
+  <h2>Add a New Photo</h2>
+  <%= form_with model: @new_photo, local: true, html: { multipart: true } do |form| %>
+    <p>
+      <%= form.label :image, "Upload an image" %><br>
+      <%= form.file_field :image %>
+    </p>
+
+    <p>
+      <%= form.label :caption, "Caption" %><br>
+      <%= form.text_field :caption %>
+    </p>
+
+    <%= form.submit "Add photo" %>
+  <% end %>
+<% end %>
+
+<hr>
 
 <% @photos.each do |photo| %>
-  <div style="margin-bottom: 30px; border-bottom: 1px solid #ccc;">
-    <% if photo.valid_image_url? %>
-      <%= image_tag photo.image, alt: "Photo", style: "max-width: 400px;" %>
+  <div style="margin-bottom: 30px; border-bottom: 1px solid #ccc; padding: 10px;">
+    <% if photo.image.attached? %>
+      <%= image_tag url_for(photo.image), alt: "Photo", style: "max-width: 100%; height: auto;" %>
     <% end %>
 
-    <p><strong>Owner:</strong> <%= link_to photo.owner.username, "/users/#{photo.owner.username}" %></p>
+    <p><strong>Owner:</strong> <%= link_to photo.owner.username, user_profile_path(photo.owner.username) %></p>
     <p><strong>Caption:</strong> <%= photo.caption %></p>
     <p><strong>Posted:</strong> <%= time_ago_in_words(photo.created_at) %> ago</p>
-    <p><strong>Likes:</strong> <%= photo.likes.count %></p>
-    <p><strong>Comments:</strong> <%= photo.comments.count %></p>
-
-    <% if user_signed_in? %>
-      <% if photo.likes.exists?(fan_id: current_user.id) %>
-        <% like = photo.likes.find_by(fan_id: current_user.id) %>
-        <%= link_to "Unlike", like_path(like), method: :delete %>
-      <% else %>
-        <%= form_with url: likes_path, method: :post, local: true do |form| %>
-          <%= form.hidden_field :photo_id, value: photo.id %>
-          <%= form.hidden_field :fan_id, value: current_user.id %>
-          <%= form.submit "Like" %>
-        <% end %>
-      <% end %>
-
-      <h4>Leave a Comment</h4>
-      <%= form_with url: comments_path, method: :post, local: true do |form| %>
-        <%= form.hidden_field :photo_id, value: photo.id %>
-        <%= form.hidden_field :author_id, value: current_user.id %>
-        <%= form.text_field :body, placeholder: "Write your comment" %>
-        <%= form.submit "Add comment" %>
-      <% end %>
-    <% end %>
-
-    <h4>Comments</h4>
-    <ul>
-      <% photo.comments.each do |comment| %>
-        <li>
-          <strong><%= comment.author.username %>:</strong> <%= comment.body %>
-        </li>
-      <% end %>
-    </ul>
+    <p><strong>Likes:</strong> <%= photo.likes_count || photo.likes.count %></p>
+    <p><%= pluralize(photo.comments.count, "comment") %></p>
 
     <% if user_signed_in? && photo.owner == current_user %>
       <%= link_to "Edit", edit_photo_path(photo) %> |

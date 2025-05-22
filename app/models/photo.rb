@@ -15,6 +15,7 @@ class Photo < ApplicationRecord
   belongs_to :owner, class_name: "User", foreign_key: "owner_id"
   has_many :comments, dependent: :destroy
   has_many :likes, dependent: :destroy
+has_one_attached :image
 
   validates :caption, presence: true
   validates :image, presence: true, if: :validate_image_required?
