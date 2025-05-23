@@ -25,4 +25,15 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+  def comments
+    Comment.where({ :fan_id => self.id })
+  end
+
+  def likes
+    Like.where({ :fan_id => self.id })
+  end
+
+  def photos
+    Photo.where({ :owner_id => self.id })
+  end
 end

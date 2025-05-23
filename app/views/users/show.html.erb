@@ -1,17 +1,17 @@
 <h1><%= @the_user.username %>'s Profile</h1>
 <p>Email: <%= @the_user.email %></p>
-<p>Account: <%= @the_user.private ? "Private" : "Public" %></p>
-<p>Comments: <%= @the_user.comments.count %></p>
-<p>Likes: <%= @the_user.likes.count %></p>
+<p>Private: <%= @the_user.private ? "Yes" : "No" %></p>
+<p>Comments count: <%= @the_user.comments.count %></p>
+<p>Likes count: <%= @the_user.likes.count %></p>
 
 <h2>Photos</h2>
-<div class="row">
-  <% @the_user.photos.each do |p| %>
-    <div class="col-md-3 mb-3">
-      <a href="/photos/<%= p.id %>">
-        <img src="<%= p.image %>" class="img-fluid">
-      </a>
-    </div>
-  <% end %>
-</div>
-<a href="/users" class="btn btn-link">Back to Users</a>
+<% @the_user.photos.each do |photo| %>
+  <div>
+    <a href="/photos/<%= photo.id %>">
+      <img src="<%= photo.image %>" />
+    </a>
+    <p><%= photo.caption %></p>
+  </div>
+<% end %>
+
+<a href="/users">Back to Users</a>
