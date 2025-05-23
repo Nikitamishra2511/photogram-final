@@ -1,14 +1,10 @@
-<h1>All Photos</h1>
-<div class="row">
-  <% @list_of_photos.each do |photo| %>
-    <div class="col-md-4 mb-4">
-      <img src="<%= photo.image %>" class="img-fluid">
-      <p><strong><%= photo.user.username %></strong></p>
-      <p><%= photo.caption %></p>
-      <a href="/photos/<%= photo.id %>">View</a> |
-      <a href="/photos/<%= photo.id %>/edit">Edit</a> |
-      <a href="/delete_photo/<%= photo.id %>">Delete</a>
-    </div>
-  <% end %>
-</div>
-<a href="/photos/new" class="btn btn-primary">Add Photo</a>
+  <h1>All Photos</h1>
+
+   <% @list_of_photos.each do |photo| %>
+     <div>
+       <a href="/photos/<%= photo.id %>">
+         <img src="<%= photo.image.url %>" alt="Photo" />
+       </a>
+       <p><%= photo.caption %></p>
+     </div>
+   <% end %>
