@@ -12,4 +12,17 @@
 #  owner_id       :integer
 #
 class Photo < ApplicationRecord
+   def user
+     matching_users = User.where({ :id => self.owner_id })
+     the_user       = matching_users.at(0)
+     return the_user
+   end
+   def comments
+    Comment.where({ :photo_id => self.id })
+  end
+
+  def likes
+    Like.where({ :photo_id => self.id })
+  end
 end
+ end

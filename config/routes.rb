@@ -3,7 +3,7 @@ Rails.application.routes.draw do
     devise_for :users
 
     # Root
-    get("/", { :controller => "pages", :action => "home" })
+    root({ :controller => "pages", :action => "home" })
 
     # Photos
     get("/photos",               { :controller => "photos",          :action => "index"   })

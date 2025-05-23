@@ -1,14 +1,15 @@
 <h1>Photo by <%= @the_photo.user.username %></h1>
-<img src="<%= @the_photo.image %>" class="img-fluid mb-3">
+<img src="<%= @the_photo.image.url %>" alt="Photo" />
+
 <p><%= @the_photo.caption %></p>
 
 <h2>Comments (<%= @the_photo.comments.count %>)</h2>
-<ul>
-  <% @the_photo.comments.each do |c| %>
-    <li><strong><%= c.author.username %>:</strong> <%= c.body %></li>
-  <% end %>
-</ul>
-
+<% @the_photo.comments.each do |comment| %>
+  <div>
+    <p><strong><%= comment.user.username %></strong></p>
+    <p><%= comment.content %></p>
+  </div>
+<% end %>
 <form action="/comments/create" method="post" class="mb-3">
   <input type="hidden" name="photo_id" value="<%= @the_photo.id %>">
   <div class="input-group">
