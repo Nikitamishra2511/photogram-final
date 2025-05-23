@@ -10,7 +10,7 @@ class PhotosController < ApplicationController
       .where(users: { private: false })
       .order(created_at: :desc)
 
-    render({ :template => "photos/index" })
+    render({ template: "photos/index" })
   end
 
   def show
@@ -19,12 +19,12 @@ class PhotosController < ApplicationController
 
     @like = Like.where(photo_id: @photo.id, fan_id: current_user&.id).first
 
-    render({ :template => "photos/show" })
+    render({ template: "photos/show" })
   end
 
   def new
     @photo = Photo.new
-    render({ :template => "photos/new" })
+    render({ template: "photos/new" })
   end
 
   def create
@@ -46,7 +46,7 @@ class PhotosController < ApplicationController
 
   def edit
     @photo = Photo.find(params.fetch("id"))
-    render({ :template => "photos/edit" })
+    render({ template: "photos/edit" })
   end
 
   def update
