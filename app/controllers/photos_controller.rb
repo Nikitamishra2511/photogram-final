@@ -28,7 +28,7 @@ class PhotosController < ApplicationController
        the_photo.save
 
        return redirect_to(
-         "/photos/#{ the_photo.id }",
+         "/",
          { :notice => "Photo added successfully." },
        )
      end

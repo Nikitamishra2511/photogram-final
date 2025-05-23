@@ -14,7 +14,10 @@ class LikesController < ApplicationController
     the_like.photo_id = params.fetch("photo_id")
     the_like.save
 
-    redirect_to("/photos/" + the_like.photo_id.to_s)
+    return redirect_to(
+      "/",
+      { :notice => "Like created successfully." },
+    )
   end
 
   def show
@@ -38,11 +41,16 @@ class LikesController < ApplicationController
     redirect_to("/likes/" + the_id)
   end
 
-  def destroy
-    the_id       = params.fetch("an_id")
-    the_like     = Like.where({ :id => the_id }).at(0)
+   def destroy
+    the_id         = params.fetch("an_id")
+    matching       = Like.where({ :id => the_id })
+    the_like       = matching.at(0)
     the_like.destroy
 
-    redirect_to("/likes")
+    # specs call this an “alert”
+    return redirect_to(
+      "/",
+      { :alert => "Like deleted successfully." },
+    )
   end
 end

@@ -43,7 +43,7 @@ Rails.application.routes.draw do
 
     # Users (public)
     get("/users",     { :controller => "users", :action => "index" })
-    get("/users/:an_id",{ :controller => "users", :action => "show" })
+    get("/users/:username",{ :controller => "users", :action => "show" })
 
     # Feed & Discovery (requires authentication in controller)
     get("/feed",      { :controller => "photos", :action => "feed"      })

@@ -6,6 +6,7 @@
 <p>Posted by: <%= @the_photo.user.username %></p>
 <p>Comments: <%= @the_photo.comments.count %></p>
 <p>Likes: <%= @the_photo.likes.count %></p>
+<p>Posted <%= time_ago_in_words(@the_photo.created_at) %> ago</p>
 
 <h2>Comments</h2>
 <% @the_photo.comments.each do |c| %>
@@ -13,6 +14,7 @@
 <% end %>
 
 <% if user_signed_in? %>
+  <!-- Add Comment Form -->
   <form action="/comments/create" method="post">
     <input
       type="hidden"
@@ -30,4 +32,35 @@
 
     <button>Add comment</button>
   </form>
+
+  <!-- Delete Photo Link -->
+  <% if current_user.id == @the_photo.owner_id %>
+    <a href="/delete_photo/<%= @the_photo.id %>">
+      Delete this photo
+    </a>
+  <% end %>
+
+  <!-- Like / Unlike -->
+  <% existing_like = 
+       Like.where({ :fan_id => current_user.id,
+                    :photo_id => @the_photo.id }).at(0) %>
+  <% if existing_like.nil? %>
+    <form action="/likes/create" method="post">
+      <input
+        type="hidden"
+        name="photo_id"
+        value="<%= @the_photo.id %>"
+      />
+      <input
+        type="hidden"
+        name="fan_id"
+        value="<%= current_user.id %>"
+      />
+      <button>Like</button>
+    </form>
+  <% else %>
+    <a href="/delete_like/<%= existing_like.id %>">
+      Unlike
+    </a>
+  <% end %>
 <% end %>
