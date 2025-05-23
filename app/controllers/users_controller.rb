@@ -23,9 +23,9 @@ class UsersController < ApplicationController
     matching_users = User.where({ :username => the_username })
     @the_user      = matching_users.at(0)
 
-    accepted       = FollowRequest.where({
-      :fan_id => @the_user.id,
-      :status => "accepted"
+    accepted = FollowRequest.where({
+  :sender_id => @the_user.id,
+  :status    => "accepted"
     })
     followee_ids   = accepted.map { |fr| fr.recipient_id }
 
@@ -45,23 +45,27 @@ class UsersController < ApplicationController
     render({ :template => "users/liked_photos" })
   end
 
-  def discover
-    the_username     = params.fetch("username")
-    matching_users   = User.where({ :username => the_username })
-    @the_user        = matching_users.at(0)
+   def discover
+     the_username   = params.fetch("username")
+     matching_users = User.where({ :username => the_username })
+     @the_user      = matching_users.at(0)
 
-    accepted         = FollowRequest.where({
-      :fan_id => @the_user.id,
-      :status => "accepted"
-    })
-    followee_ids     = accepted.map { |fr| fr.recipient_id }
+   - accepted = FollowRequest.where({
+   -   :fan_id => @the_user.id,
+   -   :status => "accepted"
+   - })
+   + accepted = FollowRequest.where({
+   +   :sender_id => @the_user.id,
+   +   :status    => "accepted"
+   + })
 
-    their_likes      = Like.where({ :fan_id => followee_ids })
-    liked_ids        = their_likes.map { |like| like.photo_id }.uniq
+     followee_ids     = accepted.map { |fr| fr.recipient_id }
+     their_likes      = Like.where({ :fan_id => followee_ids })
+     liked_ids        = their_likes.map { |like| like.photo_id }.uniq
 
-    @discovered_photos = Photo.where({ :id => liked_ids })
-    render({ :template => "users/discover" })
-  end
+     @discovered_photos = Photo.where({ :id => liked_ids })
+     render({ :template => "users/discover" })
+   end
 
   def accept_follow_request
     the_id            = params.fetch("an_id")
