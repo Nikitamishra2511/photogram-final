@@ -1,30 +1,49 @@
 class CommentsController < ApplicationController
+  def index
+    @list_of_comments = Comment.all
+    render({ :template => "comments/index" })
+  end
+
+  def new
+    render({ :template => "comments/new" })
+  end
+
   def create
-    unless user_signed_in?
-      redirect_to root_path, alert: "You must be signed in to comment."
-      return
-    end
+    the_comment           = Comment.new
+    the_comment.author_id = current_user.id
+    the_comment.photo_id  = params.fetch("photo_id")
+    the_comment.body      = params.fetch("body")
+    the_comment.save
 
-    @comment = Comment.new(comment_params)
-    @comment.author = current_user
+    redirect_to("/photos/" + the_comment.photo_id.to_s)
+  end
 
-    if @comment.save
-      redirect_to photo_path(@comment.photo), notice: "Comment added"
-    else
-      redirect_to photo_path(@comment.photo), alert: @comment.errors.full_messages.to_sentence
-    end
+  def show
+    the_id          = params.fetch("an_id")
+    @the_comment    = Comment.where({ :id => the_id }).at(0)
+    render({ :template => "comments/show" })
+  end
+
+  def edit
+    the_id          = params.fetch("an_id")
+    @the_comment    = Comment.where({ :id => the_id }).at(0)
+    render({ :template => "comments/edit" })
+  end
+
+  def update
+    the_id          = params.fetch("an_id")
+    the_comment     = Comment.where({ :id => the_id }).at(0)
+    the_comment.body= params.fetch("body")
+    the_comment.save
+
+    redirect_to("/comments/" + the_id)
   end
 
   def destroy
-    comment = Comment.find(params[:id])
-    comment.destroy
-    redirect_to photo_path(comment.photo), notice: "Comment deleted"
-  end
+    the_id          = params.fetch("an_id")
+    the_comment     = Comment.where({ :id => the_id }).at(0)
+    the_comment.destroy
 
-  private
-
-  def comment_params
-    params.require(:comment).permit(:photo_id, :body)
+    redirect_to("/comments")
   end
 end
-

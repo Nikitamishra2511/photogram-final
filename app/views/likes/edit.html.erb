@@ -1,0 +1,15 @@
+<h1>Edit Like</h1>
+<form action="/likes/<%= @the_like.id %>/update" method="post">
+  <div class="mb-3">
+    <label for="photo_id_field" class="form-label">Photo ID</label>
+    <input
+      id="photo_id_field"
+      name="photo_id"
+      type="number"
+      value="<%= @the_like.photo.id %>"
+      class="form-control"
+    >
+  </div>
+  <button type="submit" class="btn btn-warning">Update</button>
+</form>
+<a href="/likes/<%= @the_like.id %>" class="btn btn-link">Cancel</a>

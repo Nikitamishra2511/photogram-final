@@ -1,16 +1,12 @@
 <h1>New Photo</h1>
-
-<%= form_with model: @photo, local: true do |form| %>
-  <%= form.hidden_field :owner_id, value: current_user.id %>
-  <p>
-    <%= form.label :image %><br>
-    <%= form.text_field :image %>
-  </p>
-<p>
-  <%= form.label :caption %><br>
-  <%= form.text_area :caption %>
-</p>
-<p>
-  <%= form.button "Add Photo" %>
-</p>
-<% end %>
+<form action="/photos/create" method="post">
+  <div class="mb-3">
+    <label for="image_field" class="form-label">Image URL:</label>
+    <input id="image_field" name="image" type="text" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label for="caption_field" class="form-label">Caption:</label>
+    <input id="caption_field" name="caption" type="text" class="form-control">
+  </div>
+  <button type="submit" class="btn btn-success">Create</button>
+</form>

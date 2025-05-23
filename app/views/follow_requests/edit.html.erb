@@ -1,0 +1,15 @@
+<h1>Edit Follow Request</h1>
+<form action="/follow_requests/<%= @the_request.id %>/update" method="post">
+  <div class="mb-3">
+    <label for="status_field" class="form-label">Status</label>
+    <input
+      id="status_field"
+      name="status"
+      type="text"
+      value="<%= @the_request.status %>"
+      class="form-control"
+    >
+  </div>
+  <button type="submit" class="btn btn-warning">Update</button>
+</form>
+<a href="/follow_requests/<%= @the_request.id %>" class="btn btn-link">Cancel</a>

@@ -1,30 +1,48 @@
-   class LikesController < ApplicationController
-     before_action(:ensure_signed_in)
+class LikesController < ApplicationController
+  def index
+    @list_of_likes = Like.all
+    render({ :template => "likes/index" })
+  end
 
-     def create
-       new_like = Like.new
-       new_like.photo_id = params.fetch("photo_id")
-       new_like.fan_id   = params.fetch("fan_id")
-       new_like.save
+  def new
+    render({ :template => "likes/new" })
+  end
 
-       flash[:notice] = "Like created successfully"
-       redirect_to("/")
-     end
+  def create
+    the_like          = Like.new
+    the_like.fan_id   = current_user.id
+    the_like.photo_id = params.fetch("photo_id")
+    the_like.save
 
-     def destroy
-       like = Like.where({ :id => params.fetch("id") }).at(0)
-       like.destroy
+    redirect_to("/photos/" + the_like.photo_id.to_s)
+  end
 
-       flash[:alert] = "Like deleted successfully"
-       redirect_to("/")
-     end
+  def show
+    the_id       = params.fetch("an_id")
+    @the_like    = Like.where({ :id => the_id }).at(0)
+    render({ :template => "likes/show" })
+  end
 
-     private
+  def edit
+    the_id       = params.fetch("an_id")
+    @the_like    = Like.where({ :id => the_id }).at(0)
+    render({ :template => "likes/edit" })
+  end
 
-     def ensure_signed_in
-       unless user_signed_in?
-         flash[:alert] = "You need to sign in or sign up before continuing."
-         redirect_to("/users/sign_in")
-       end
-     end
-   end
+  def update
+    the_id       = params.fetch("an_id")
+    the_like     = Like.where({ :id => the_id }).at(0)
+    the_like.photo_id = params.fetch("photo_id")
+    the_like.save
+
+    redirect_to("/likes/" + the_id)
+  end
+
+  def destroy
+    the_id       = params.fetch("an_id")
+    the_like     = Like.where({ :id => the_id }).at(0)
+    the_like.destroy
+
+    redirect_to("/likes")
+  end
+end

@@ -1,0 +1,15 @@
+<h1>All Likes</h1>
+<ul class="list-group">
+  <% @list_of_likes.each do |l| %>
+    <li class="list-group-item">
+      <%= l.fan.username %> liked
+      <a href="/photos/<%= l.photo.id %>">Photo <%= l.photo.id %></a>
+      <span class="float-end">
+        <a href="/likes/<%= l.id %>">View</a> |
+        <a href="/likes/<%= l.id %>/edit">Edit</a> |
+        <a href="/delete_like/<%= l.id %>">Delete</a>
+      </span>
+    </li>
+  <% end %>
+</ul>
+<a href="/likes/new" class="btn btn-primary mt-3">New Like</a>

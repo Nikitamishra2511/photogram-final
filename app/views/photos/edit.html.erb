@@ -1,15 +1,25 @@
-<h1>Update photo</h1>
-
-<%= form_with(model: @photo, url: photo_path(@photo), method: :patch, local: true) do |form| %>
-  <p>
-    <%= form.label :caption %><br>
-    <%= form.text.file_field :caption %>
-  </p>
-
-  <p>
-    <%= form.label :image %><br>
-    <%= form.file_field :image %>
-  </p>
-
-  <%= form.submit "Update photo" %>
-<% end %>
+<h1>Edit Photo</h1>
+<form action="/photos/<%= @the_photo.id %>/update" method="post">
+  <div class="mb-3">
+    <label for="image_field" class="form-label">Image URL:</label>
+    <input
+      id="image_field"
+      name="image"
+      type="text"
+      value="<%= @the_photo.image %>"
+      class="form-control"
+    >
+  </div>
+  <div class="mb-3">
+    <label for="caption_field" class="form-label">Caption:</label>
+    <input
+      id="caption_field"
+      name="caption"
+      type="text"
+      value="<%= @the_photo.caption %>"
+      class="form-control"
+    >
+  </div>
+  <button type="submit" class="btn btn-warning">Update</button>
+</form>
+<a href="/photos/<%= @the_photo.id %>" class="btn btn-link">Cancel</a>

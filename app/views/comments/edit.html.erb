@@ -1,0 +1,15 @@
+<h1>Edit Comment</h1>
+<form action="/comments/<%= @the_comment.id %>/update" method="post">
+  <div class="mb-3">
+    <label for="body_field" class="form-label">Body</label>
+    <input
+      id="body_field"
+      name="body"
+      type="text"
+      value="<%= @the_comment.body %>"
+      class="form-control"
+    >
+  </div>
+  <button type="submit" class="btn btn-warning">Update</button>
+</form>
+<a href="/comments/<%= @the_comment.id %>" class="btn btn-link">Cancel</a>

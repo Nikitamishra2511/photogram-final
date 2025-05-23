@@ -1,0 +1,4 @@
+<h1>Comment by <%= @the_comment.author.username %></h1>
+<p><%= @the_comment.body %></p>
+<a href="/photos/<%= @the_comment.photo.id %>" class="btn btn-link">Photo</a>
+<a href="/comments" class="btn btn-link">Back</a>

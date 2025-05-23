@@ -1,49 +1,55 @@
 class FollowRequestsController < ApplicationController
-  before_action :authenticate_user!
+  def index
+    @list_of_requests = FollowRequest.all
+    render({ :template => "follow_requests/index" })
+  end
+
+  def new
+    render({ :template => "follow_requests/new" })
+  end
 
   def create
-    @follow_request = FollowRequest.new
-    @follow_request.sender = current_user
-    @follow_request.recipient_id = params[:recipient_id]
+    the_request             = FollowRequest.new
+    the_request.sender_id    = current_user.id
+    the_request.recipient_id = params.fetch("recipient_id")
 
-    recipient = User.find(@follow_request.recipient_id)
-
-    if recipient.private?
-      @follow_request.status = "pending"
-      message = "Follow request sent!"
+    recipient = User.where({ :id => the_request.recipient_id }).at(0)
+    if recipient.private
+      the_request.status = "pending"
     else
-      @follow_request.status = "accepted"
-      message = "You are now following #{recipient.username}."
+      the_request.status = "accepted"
     end
 
-    if @follow_request.save
-      redirect_to users_path, notice: message
-    else
-      redirect_to users_path, alert: "Unable to send follow request."
-    end
+    the_request.save
+    redirect_to("/follow_requests")
+  end
+
+  def show
+    the_id           = params.fetch("an_id")
+    @the_request     = FollowRequest.where({ :id => the_id }).at(0)
+    render({ :template => "follow_requests/show" })
+  end
+
+  def edit
+    the_id           = params.fetch("an_id")
+    @the_request     = FollowRequest.where({ :id => the_id }).at(0)
+    render({ :template => "follow_requests/edit" })
   end
 
   def update
-    @follow_request = FollowRequest.find(params[:id])
-    new_status = params[:status]
+    the_id           = params.fetch("an_id")
+    the_request      = FollowRequest.where({ :id => the_id }).at(0)
+    the_request.status = params.fetch("status")
+    the_request.save
 
-    if @follow_request.recipient == current_user && %w[accepted rejected].include?(new_status)
-      @follow_request.update(status: new_status)
-      redirect_to user_profile_path(current_user.username), notice: "Request #{new_status}."
-    else
-      redirect_to user_profile_path(current_user.username), alert: "Unauthorized action."
-    end
+    redirect_to("/follow_requests/" + the_id)
   end
 
   def destroy
-    @follow_request = FollowRequest.find(params[:id])
+    the_id           = params.fetch("an_id")
+    the_request      = FollowRequest.where({ :id => the_id }).at(0)
+    the_request.destroy
 
-    if @follow_request.sender == current_user || @follow_request.recipient == current_user
-      @follow_request.destroy
-      redirect_back fallback_location: users_path, notice: "Follow request removed."
-    else
-      redirect_back fallback_location: users_path, alert: "Unauthorized action."
-    end
+    redirect_to("/follow_requests")
   end
 end
-

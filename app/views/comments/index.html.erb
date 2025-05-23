@@ -1,0 +1,16 @@
+<h1>All Comments</h1>
+<ul class="list-group">
+  <% @list_of_comments.each do |c| %>
+    <li class="list-group-item">
+      <strong><%= c.author.username %>:</strong>
+      <%= c.body %> on
+      <a href="/photos/<%= c.photo.id %>">Photo <%= c.photo.id %></a>
+      <span class="float-end">
+        <a href="/comments/<%= c.id %>">View</a> |
+        <a href="/comments/<%= c.id %>/edit">Edit</a> |
+        <a href="/delete_comment/<%= c.id %>">Delete</a>
+      </span>
+    </li>
+  <% end %>
+</ul>
+<a href="/comments/new" class="btn btn-primary mt-3">New Comment</a>

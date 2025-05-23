@@ -1,36 +1,43 @@
 Rails.application.routes.draw do
-  # home page
-  root to: "home#index"
+  devise_for :users
 
-  # Devise with a custom registrations controller
-  devise_for :users, { :controllers => { :registrations => "registrations" } }
+  # Photos
+  get("/photos",                        { :controller => "photos",            :action => "index" })
+  get("/photos/new",                    { :controller => "photos",            :action => "new"   })
+  post("/photos/create",                { :controller => "photos",            :action => "create"})
+  get("/photos/:an_id",                 { :controller => "photos",            :action => "show"  })
+  get("/photos/:an_id/edit",            { :controller => "photos",            :action => "edit"  })
+  post("/photos/:an_id/update",         { :controller => "photos",            :action => "update"})
+  get("/delete_photo/:an_id",           { :controller => "photos",            :action => "destroy"})
 
-  # photos
-  get  "/photos"            , { :controller => "photos", :action => "index" }
-  get  "/photos/new"        , { :controller => "photos", :action => "new"   }
-  post "/create_photo"      , { :controller => "photos", :action => "create"}
-  get  "/photos/:id"        , { :controller => "photos", :action => "show"  }
-  get  "/photos/:id/edit"   , { :controller => "photos", :action => "edit"  }
-  post "/update_photo/:id"  , { :controller => "photos", :action => "update"}
-  post "/delete_photo/:id"  , { :controller => "photos", :action => "destroy"}
+  # Comments
+  get("/comments",                      { :controller => "comments",          :action => "index" })
+  get("/comments/new",                  { :controller => "comments",          :action => "new"   })
+  post("/comments/create",              { :controller => "comments",          :action => "create"})
+  get("/comments/:an_id",               { :controller => "comments",          :action => "show"  })
+  get("/comments/:an_id/edit",          { :controller => "comments",          :action => "edit"  })
+  post("/comments/:an_id/update",       { :controller => "comments",          :action => "update"})
+  get("/delete_comment/:an_id",         { :controller => "comments",          :action => "destroy"})
 
-  # comments
-  post "/create_comment"      , { :controller => "comments", :action => "create" }
-  post "/delete_comment/:id"  , { :controller => "comments", :action => "destroy"}
+  # Likes
+  get("/likes",                         { :controller => "likes",             :action => "index" })
+  get("/likes/new",                     { :controller => "likes",             :action => "new"   })
+  post("/likes/create",                 { :controller => "likes",             :action => "create"})
+  get("/likes/:an_id",                  { :controller => "likes",             :action => "show"  })
+  get("/likes/:an_id/edit",             { :controller => "likes",             :action => "edit"  })
+  post("/likes/:an_id/update",          { :controller => "likes",             :action => "update"})
+  get("/delete_like/:an_id",            { :controller => "likes",             :action => "destroy"})
 
-  # likes
-  post "/create_like"         , { :controller => "likes", :action => "create" }
-  post "/delete_like/:id"     , { :controller => "likes", :action => "destroy"}
+  # FollowRequests
+  get("/follow_requests",               { :controller => "follow_requests",   :action => "index" })
+  get("/follow_requests/new",           { :controller => "follow_requests",   :action => "new"   })
+  post("/follow_requests/create",       { :controller => "follow_requests",   :action => "create"})
+  get("/follow_requests/:an_id",        { :controller => "follow_requests",   :action => "show"  })
+  get("/follow_requests/:an_id/edit",   { :controller => "follow_requests",   :action => "edit"  })
+  post("/follow_requests/:an_id/update",{ :controller => "follow_requests",   :action => "update"})
+  get("/delete_follow_request/:an_id",  { :controller => "follow_requests",   :action => "destroy"})
 
-  # follow requests
-  post "/create_follow_request"     , { :controller => "follow_requests", :action => "create" }
-  post "/update_follow_request/:id" , { :controller => "follow_requests", :action => "update" }
-  post "/delete_follow_request/:id" , { :controller => "follow_requests", :action => "destroy"}
-
-  # users
-  get "/users"                          , { :controller => "users", :action => "index"          }
-  get "/users/:username"                , { :controller => "users", :action => "show"           }
-  get "/users/:username/feed"           , { :controller => "users", :action => "feed"           }
-  get "/users/:username/liked_photos"   , { :controller => "users", :action => "liked_photos"  }
-  get "/users/:username/discover"       , { :controller => "users", :action => "discover"       }
+  # Users (public index & show)
+  get("/users",                         { :controller => "users",             :action => "index" })
+  get("/users/:an_id",                  { :controller => "users",             :action => "show"  })
 end

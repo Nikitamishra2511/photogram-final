@@ -1,30 +1,14 @@
-<h1>All Public Photos</h1>
-
-<% if user_signed_in? %>
-  <form id="new_photo_form" action="/create_photo" method="post" enctype="multipart/form-data">
-    <%= csrf_meta_tags %>
-
-    <label for="image_field">Image</label><br>
-    <input id="image_field" type="file" name="image"><br>
-
-    <label for="caption_field">Caption</label><br>
-    <input id="caption_field" type="text" name="caption"><br>
-
-    <button type="submit">Add photo</button>
-  </form>
-  <hr>
-<% end %>
-
-<% @photos.each do |photo| %>
-  <div style="margin-bottom: 30px;">
-    <% if photo.valid_image_url? %>
-      <%= image_tag photo.image, alt: "Photo" %>
-    <% end %>
-    <p><strong>Owner:</strong> <%= link_to photo.owner.username, user_path(photo.owner.username) %></p>
-    <p><strong>Caption:</strong> <%= photo.caption %></p>
-    <p><strong>Posted:</strong> <%= time_ago_in_words(photo.created_at) %> ago</p>
-    <p><strong>Likes:</strong> <%= photo.likes_count %></p>
-    <p><%= pluralize(photo.comments.count, "comment") %></p>
-    <%= link_to "Details", photo_path(photo.id) %>
-  </div>
-<% end %>
+<h1>All Photos</h1>
+<div class="row">
+  <% @list_of_photos.each do |photo| %>
+    <div class="col-md-4 mb-4">
+      <img src="<%= photo.image %>" class="img-fluid">
+      <p><strong><%= photo.user.username %></strong></p>
+      <p><%= photo.caption %></p>
+      <a href="/photos/<%= photo.id %>">View</a> |
+      <a href="/photos/<%= photo.id %>/edit">Edit</a> |
+      <a href="/delete_photo/<%= photo.id %>">Delete</a>
+    </div>
+  <% end %>
+</div>
+<a href="/photos/new" class="btn btn-primary">Add Photo</a>

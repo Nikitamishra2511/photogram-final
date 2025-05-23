@@ -1,0 +1,14 @@
+<h1>Follow Requests</h1>
+<ul class="list-group">
+  <% @list_of_requests.each do |fr| %>
+    <li class="list-group-item">
+      <%= fr.sender.username %> → <%= fr.recipient.username %> : <%= fr.status %>
+      <span class="float-end">
+        <a href="/follow_requests/<%= fr.id %>">View</a> |
+        <a href="/follow_requests/<%= fr.id %>/edit">Edit</a> |
+        <a href="/delete_follow_request/<%= fr.id %>">Delete</a>
+      </span>
+    </li>
+  <% end %>
+</ul>
+<a href="/follow_requests/new" class="btn btn-primary mt-3">New Request</a>

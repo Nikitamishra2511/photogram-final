@@ -1,66 +1,25 @@
-<h1>Photo Details</h1>
+<h1>Photo by <%= @the_photo.user.username %></h1>
+<img src="<%= @the_photo.image %>" class="img-fluid mb-3">
+<p><%= @the_photo.caption %></p>
 
-<% if @photo.image.present? %>
-  <img
-    src="<%= @photo.image_identifier %>"
-    alt="Photo"
-    style="max-width:100%; height:auto;"
-  >
-<% else %>
-  <p><em>No image available</em></p>
-<% end %>
-
-<p><strong>Caption:</strong> <%= @photo.caption %></p>
-<p><strong>Owner:</strong>
-  <a href="/users/<%= @photo.owner.username %>">
-    <%= @photo.owner.username %>
-  </a>
-</p>
-<p><strong>Comments:</strong> <%= @photo.comments_count %></p>
-<p><strong>Likes:</strong>   <%= @photo.likes_count %></p>
-<p><strong>Posted:</strong>  <%= time_ago_in_words(@photo.created_at) %> ago</p>
-
-<hr>
-
-<h2>Comments</h2>
+<h2>Comments (<%= @the_photo.comments.count %>)</h2>
 <ul>
-  <% @photo.comments.each do |comment| %>
-    <li>
-      <strong><%= comment.author.username %>:</strong>
-      <%= comment.body %>
-    </li>
+  <% @the_photo.comments.each do |c| %>
+    <li><strong><%= c.author.username %>:</strong> <%= c.body %></li>
   <% end %>
 </ul>
 
-<% if user_signed_in? && current_user == @photo.owner %>
-  <a href="/delete_photo/<%= @photo.id %>">Delete this photo</a>
-<% end %>
+<form action="/comments/create" method="post" class="mb-3">
+  <input type="hidden" name="photo_id" value="<%= @the_photo.id %>">
+  <div class="input-group">
+    <input name="body" type="text" class="form-control" placeholder="Add a comment...">
+    <button class="btn btn-outline-secondary">Comment</button>
+  </div>
+</form>
 
-<hr>
+<form action="/likes/create" method="post" class="mb-3">
+  <input type="hidden" name="photo_id" value="<%= @the_photo.id %>">
+  <button class="btn btn-outline-primary">Like (<%= @the_photo.likes.count %>)</button>
+</form>
 
-<% if user_signed_in? %>
-  <h2>Add comment</h2>
-  <form action="/create_comment" method="post">
-    <input type="hidden" name="photo_id" value="<%= @photo.id %>">
-
-    <label for="body_field">Comment</label><br>
-    <textarea id="body_field" name="body"></textarea><br>
-
-    <button type="submit">Add comment</button>
-  </form>
-
-  <% the_like = @photo.likes.where({ :fan_id => current_user.id }).at(0) %>
-
-  <% if the_like.nil? %>
-    <form action="/create_like" method="post">
-      <input type="hidden" name="photo_id" value="<%= @photo.id %>">
-      <input type="hidden" name="fan_id"   value="<%= current_user.id %>">
-
-      <button type="submit">Like</button>
-    </form>
-  <% else %>
-    <form action="/delete_like/<%= the_like.id %>" method="post">
-      <button type="submit">Unlike</button>
-    </form>
-  <% end %>
-<% end %>
+<a href="/photos" class="btn btn-link">Back to all photos</a>
