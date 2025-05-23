@@ -1,19 +1,30 @@
-class LikesController < ApplicationController
-  def create
-    like = Like.new
-    like.fan_id = current_user.id
-    like.photo_id = params.fetch("photo_id")
+   class LikesController < ApplicationController
+     before_action(:ensure_signed_in)
 
-    if like.save
-      redirect_to photo_path(like.photo), notice: "Like added"
-    else
-      redirect_to photo_path(like.photo), alert: like.errors.full_messages.to_sentence
-    end
-  end
+     def create
+       new_like = Like.new
+       new_like.photo_id = params.fetch("photo_id")
+       new_like.fan_id   = params.fetch("fan_id")
+       new_like.save
 
-  def destroy
-    like = Like.find(params[:id])
-    like.destroy
-    redirect_to photo_path(like.photo), notice: "Like removed"
-  end
-end
+       flash[:notice] = "Like created successfully"
+       redirect_to("/")
+     end
+
+     def destroy
+       like = Like.where({ :id => params.fetch("id") }).at(0)
+       like.destroy
+
+       flash[:alert] = "Like deleted successfully"
+       redirect_to("/")
+     end
+
+     private
+
+     def ensure_signed_in
+       unless user_signed_in?
+         flash[:alert] = "You need to sign in or sign up before continuing."
+         redirect_to("/users/sign_in")
+       end
+     end
+   end

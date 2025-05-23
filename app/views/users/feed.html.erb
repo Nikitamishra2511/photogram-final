@@ -1,18 +1,32 @@
 <h1><%= @user.username %>'s Feed</h1>
 
-<% if @feed_photos.empty? %>
-  <p>No photos yet from people <%= @user.username %> is following.</p>
-<% end %>
+<% @photos.each do |photo| %>
+  <%# only show photos from people this user is following %>
+  <%# (your controller should already limit @photos to those) %>
 
-<% @feed_photos.each do |photo| %>
-  <div style="margin-bottom: 20px;">
-    <% if photo.image.attached? %>
-      <%= image_tag photo.image, style: "max-width: 300px;" %>
+  <div style="margin-bottom:30px; border-bottom:1px solid #ccc; padding:10px;">
+    <% if photo.image.present? %>
+      <a href="/photos/<%= photo.id %>">
+        <img
+          src="<%= photo.image_identifier %>"
+          alt="Photo"
+          style="max-width:100%; height:auto;"
+        >
+      </a>
+    <% else %>
+      <p><em>No image available</em></p>
     <% end %>
 
+    <p>
+      <strong>Owner:</strong>
+      <a href="/users/<%= photo.owner.username %>">
+        <%= photo.owner.username %>
+      </a>
+    </p>
+
     <p><strong>Caption:</strong> <%= photo.caption %></p>
-    <p><strong>Posted by:</strong> <%= link_to photo.owner.username, user_profile_path(photo.owner.username) %></p>
     <p><strong>Posted:</strong> <%= time_ago_in_words(photo.created_at) %> ago</p>
-    <%= link_to "View Photo", photo_path(photo) %>
+    <p><strong>Likes:</strong> <%= photo.likes_count %></p>
+    <p><strong>Comments:</strong> <%= photo.comments_count %></p>
   </div>
 <% end %>

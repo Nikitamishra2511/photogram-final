@@ -1,8 +1,10 @@
 class FollowRequestsController < ApplicationController
+  before_action :authenticate_user!
+
   def create
     @follow_request = FollowRequest.new
     @follow_request.sender = current_user
-    @follow_request.recipient_id = params.fetch(:recipient_id)
+    @follow_request.recipient_id = params[:recipient_id]
 
     recipient = User.find(@follow_request.recipient_id)
 
@@ -15,16 +17,15 @@ class FollowRequestsController < ApplicationController
     end
 
     if @follow_request.save
-      redirect_to user_profile_path(recipient.username), notice: message
+      redirect_to users_path, notice: message
     else
       redirect_to users_path, alert: "Unable to send follow request."
     end
   end
 
   def update
-    @follow_request = FollowRequest.find(params.fetch(:id))
-
-    new_status = params.fetch(:status)
+    @follow_request = FollowRequest.find(params[:id])
+    new_status = params[:status]
 
     if @follow_request.recipient == current_user && %w[accepted rejected].include?(new_status)
       @follow_request.update(status: new_status)
@@ -35,7 +36,7 @@ class FollowRequestsController < ApplicationController
   end
 
   def destroy
-    @follow_request = FollowRequest.find(params.fetch(:id))
+    @follow_request = FollowRequest.find(params[:id])
 
     if @follow_request.sender == current_user || @follow_request.recipient == current_user
       @follow_request.destroy

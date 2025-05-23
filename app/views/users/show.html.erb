@@ -1,15 +1,76 @@
 <h1><%= @user.username %>'s Profile</h1>
 
+<p>
+  <a href="/users/<%= @user.username %>/feed">Feed</a> |
+  <a href="/users/<%= @user.username %>/liked_photos">Liked Photos</a> |
+  <a href="/users/<%= @user.username %>/discover">Discover</a>
+</p>
+
+<hr>
+
+<p><strong>Private:</strong> <%= @user.private %></p>
+<p><strong>Followers:</strong>
+  <%= FollowRequest.where({ :recipient_id => @user.id, :status => "accepted" }).count %>
+</p>
+<p><strong>Following:</strong>
+  <%= FollowRequest.where({ :sender_id => @user.id, :status => "accepted" }).count %>
+</p>
+<p><strong>Photos (<%= @user.photos.count %>)</strong></p>
+
 <% @user.photos.each do |photo| %>
-  <div style="margin-bottom: 30px; border-bottom: 1px solid #ccc; padding: 10px;">
-    <% if photo.image.attached? %>
-      <%= image_tag url_for(photo.image), alt: "Photo", style: "max-width: 100%; height: auto;" %>
+  <div style="margin-bottom:30px; border-bottom:1px solid #ccc; padding:10px;">
+    <% if photo.image.present? %>
+      <a href="/photos/<%= photo.id %>">
+        <img
+          src="<%= photo.image_identifier %>"
+          alt="Photo"
+          style="max-width:100%; height:auto;"
+        >
+      </a>
     <% else %>
       <p><em>No image available</em></p>
     <% end %>
 
     <p><strong>Caption:</strong> <%= photo.caption %></p>
+    <p><strong>Likes:</strong> <%= photo.likes_count %></p>
     <p><strong>Posted:</strong> <%= time_ago_in_words(photo.created_at) %> ago</p>
+    <p>
+      <a href="/photos/<%= photo.id %>">Show details</a>
+    </p>
   </div>
 <% end %>
 
+<% if user_signed_in? && current_user != @user %>
+  <% existing = FollowRequest.where({
+       :sender_id    => current_user.id,
+       :recipient_id => @user.id
+     }) %>
+
+  <% if existing.count == 0 %>
+    <form action="/create_follow_request" method="post">
+      <input type="hidden" name="recipient_id" value="<%= @user.id %>">
+      <button>Follow</button>
+    </form>
+  <% else %>
+    <% fr = existing.at(0) %>
+    <% if fr.status == "pending" %>
+      <p>Request sent</p>
+      <a href="/delete_follow_request/<%= fr.id %>">Cancel</a>
+    <% elsif fr.status == "accepted" %>
+      <a href="/delete_follow_request/<%= fr.id %>">Unfollow</a>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%# If you are viewing your own profile, list pending requests %>
+<% if user_signed_in? && current_user == @user %>
+  <h2>Pending Follow Requests</h2>
+  <ul>
+    <% FollowRequest.where({
+         :recipient_id => @user.id,
+         :status       => "pending"
+       }).each do |req| %>
+      <li><%= req.sender.username %></li>
+    <% end %>
+  </ul>
+<% end %>

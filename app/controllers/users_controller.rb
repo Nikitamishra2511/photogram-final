@@ -1,57 +1,67 @@
 class UsersController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:index, :show]
+  # Make index public
+  skip_before_action :ensure_signed_in, only: [:index]
+  before_action :ensure_signed_in, except: [:index]
 
   def index
-    @users = User.all.order(:username)
+    @users = User.all
+    render({ :template => "users/index" })
   end
 
   def show
-    @user = User.find_by(username: params.fetch(:username))
-    @photos = @user.photos.order(created_at: :desc)
+    matching_users = User.where({ :username => params.fetch("username") })
+    @user = matching_users.at(0)
 
-    if user_signed_in?
-      @follow_request = FollowRequest.find_by(sender: current_user, recipient: @user)
-    end
-
-    if user_signed_in? && current_user == @user && @user.private?
-      @pending_requests = @user.received_follow_requests.where(status: "pending")
-    end
+    @photos = Photo.where({ :owner_id => @user.id })
+    render({ :template => "users/show" })
   end
 
   def feed
-    @user = User.find_by(username: params.fetch(:username))
-    followees = @user.sent_follow_requests.where(status: "accepted").includes(:recipient).map(&:recipient)
-    @feed_photos = Photo.where(owner_id: followees.map(&:id)).order(created_at: :desc)
+    matching_users = User.where({ :username => params.fetch("username") })
+    @user = matching_users.at(0)
+
+    following_ids = FollowRequest.where({
+      :sender_id => @user.id,
+      :status    => "accepted"
+    }).pluck(:recipient_id)
+
+    @photos = Photo.where({ :owner_id => following_ids })
+                   .order({ :created_at => :desc })
+    render({ :template => "users/feed" })
   end
 
   def liked_photos
-    @user = User.find_by(username: params.fetch(:username))
-    @liked_photos = @user.likes.includes(:photo).map(&:photo).uniq
+    matching_users = User.where({ :username => params.fetch("username") })
+    @user = matching_users.at(0)
+
+    liked_ids = Like.where({ :fan_id => @user.id }).pluck(:photo_id)
+
+    @photos = Photo.where({ :id => liked_ids })
+                   .order({ :created_at => :desc })
+    render({ :template => "users/liked_photos" })
   end
 
   def discover
-    @user = User.find_by(username: params.fetch(:username))
-    followees = @user.sent_follow_requests.where(status: "accepted").includes(:recipient).map(&:recipient)
-    liked_by_followees = Like.where(fan_id: followees.map(&:id))
-    @discover_photos = Photo.where(id: liked_by_followees.map(&:photo_id)).distinct
-  end
+    matching_users = User.where({ :username => params.fetch("username") })
+    @user = matching_users.at(0)
 
-  def edit
-    @user = current_user
-  end
+    following_ids = FollowRequest.where({
+      :sender_id => @user.id,
+      :status    => "accepted"
+    }).pluck(:recipient_id)
 
-  def update
-    @user = current_user
-    if @user.update(user_params)
-      redirect_to user_profile_path(@user.username), notice: "Profile updated successfully."
-    else
-      render :edit
-    end
+    liked_ids = Like.where({ :fan_id => following_ids }).pluck(:photo_id)
+
+    @photos = Photo.where({ :id => liked_ids })
+                   .order({ :created_at => :desc })
+    render({ :template => "users/discover" })
   end
 
   private
 
-  def user_params
-    params.require(:user).permit(:username, :private)
+  def ensure_signed_in
+    unless user_signed_in?
+      redirect_to("/users/sign_in")
+    end
   end
 end

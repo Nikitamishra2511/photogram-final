@@ -1,70 +1,81 @@
 class PhotosController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
+  # Allow public access to index, require sign-in for everything else
+  skip_before_action :ensure_signed_in, only: [:index]
+  before_action :ensure_signed_in, except: [:index]
 
   def index
-    @photos = Photo.joins(:owner).where(users: { private: false }).order(created_at: :desc)
-    @new_photo = Photo.new
+    # Only show photos from users who are not private
+    @photos = Photo
+      .joins(:owner)
+      .where(users: { private: false })
+      .order(created_at: :desc)
+
+    render({ :template => "photos/index" })
   end
 
   def show
-    @photo = Photo.includes(:owner, comments: :author, likes: :fan).find(params[:id])
-    @comments = @photo.comments
-    @like = current_user&.likes&.find_by(photo_id: @photo.id)
+    @photo = Photo.find(params.fetch("id"))
+    @comments = Comment.where(photo_id: @photo.id)
+
+    @like = Like.where(photo_id: @photo.id, fan_id: current_user&.id).first
+
+    render({ :template => "photos/show" })
   end
 
   def new
     @photo = Photo.new
+    render({ :template => "photos/new" })
   end
 
   def create
-    @photo = Photo.new(photo_params)
-    @photo.owner = current_user
-    @photo.likes_count = 0
-    @photo.comments_count = 0
+    the_photo = Photo.new
+    the_photo.caption = params.fetch("caption")
+    the_photo.image = params.fetch("image")
+    the_photo.owner_id = current_user.id
+    the_photo.comments_count = 0
+    the_photo.likes_count = 0
 
-    if @photo.save
-      redirect_to photos_path, notice: "Photo added successfully"
+    if the_photo.save
+      flash[:notice] = "Photo created successfully"
     else
-      flash[:alert] = "Photo failed to create: " + @photo.errors.full_messages.to_sentence
-      redirect_to photos_path
+      flash[:alert] = "Failed to create photo"
     end
+
+    redirect_to("/")
   end
 
   def edit
-    @photo = Photo.find(params[:id])
-    if @photo.owner != current_user
-      redirect_to photos_path, alert: "You are not authorized for that"
-    end
+    @photo = Photo.find(params.fetch("id"))
+    render({ :template => "photos/edit" })
   end
 
   def update
-    @photo = Photo.find(params[:id])
+    the_photo = Photo.find(params.fetch("id"))
+    the_photo.caption = params.fetch("caption")
+    the_photo.image = params.fetch("image")
 
-    if @photo.owner != current_user
-      redirect_to photos_path, alert: "You are not authorized for that"
-      return
-    end
-
-    if @photo.update(photo_params)
-      redirect_to photo_path(@photo), notice: "Photo updated successfully"
+    if the_photo.save
+      flash[:notice] = "Photo updated successfully"
     else
-      redirect_to photo_path(@photo), alert: "Photo failed to update"
+      flash[:alert] = "Failed to update photo"
     end
+
+    redirect_to("/photos/#{the_photo.id}")
   end
 
   def destroy
-    @photo = Photo.find(params[:id])
-    if @photo.owner == current_user
-      @photo.destroy
-      redirect_to photos_path, notice: "Photo deleted successfully"
-    else
-      redirect_to photos_path, alert: "You are not authorized for that"
-    end
+    the_photo = Photo.find(params.fetch("id"))
+    the_photo.destroy
+
+    flash[:alert] = "Photo deleted successfully"
+    redirect_to("/")
   end
 
   private
 
-  def photo_params
-    params.require(:photo).permit(:image, :caption)
+  def ensure_signed_in
+    unless user_signed_in?
+      redirect_to("/users/sign_in")
+    end
   end
 end
