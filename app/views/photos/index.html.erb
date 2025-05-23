@@ -1,10 +1,36 @@
-  <h1>All Photos</h1>
+<h1>All Photos</h1>
 
-   <% @list_of_photos.each do |photo| %>
-     <div>
-       <a href="/photos/<%= photo.id %>">
-         <img src="<%= photo.image.url %>" alt="Photo" />
-       </a>
-       <p><%= photo.caption %></p>
-     </div>
-   <% end %>
+<% if user_signed_in? %>
+  <form
+    action="/photos/create"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    <label for="image_field">Image</label>
+    <input
+      id="image_field"
+      type="file"
+      name="image"
+    />
+
+    <label for="caption_field">Caption</label>
+    <input
+      id="caption_field"
+      type="text"
+      name="caption"
+    />
+
+    <button>Add photo</button>
+  </form>
+<% end %>
+
+<div class="photo-list">
+  <% @list_of_photos.each do |photo| %>
+    <div class="photo-item">
+      <a href="/photos/<%= photo.id %>">
+        <img src="<%= photo.image.url %>" alt="Photo" />
+      </a>
+      <p><%= photo.caption %></p>
+    </div>
+  <% end %>
+</div>

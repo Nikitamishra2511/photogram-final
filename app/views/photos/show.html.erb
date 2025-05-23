@@ -1,26 +1,33 @@
- <h1>Photo Details</h1>
+<h1>Photo Details</h1>
 
-   <img src="<%= @the_photo.image.url %>" alt="Photo" />
+<img src="<%= @the_photo.image.url %>" alt="Photo" />
 
-   <p>Caption: <%= @the_photo.caption %></p>
-   <p>Posted by: <%= @the_photo.user.username %></p>
-   <p>Comments: <%= @the_photo.comments.count %></p>
-   <p>Likes: <%= @the_photo.likes.count %></p>
+<p>Caption: <%= @the_photo.caption %></p>
+<p>Posted by: <%= @the_photo.user.username %></p>
+<p>Comments: <%= @the_photo.comments.count %></p>
+<p>Likes: <%= @the_photo.likes.count %></p>
 
-   <h2>Comments</h2>
-   <% @the_photo.comments.each do |c| %>
-     <p><%= c.body %> — <%= c.author.username %></p>
-   <% end %>
+<h2>Comments</h2>
+<% @the_photo.comments.each do |c| %>
+  <p><%= c.body %> — <%= c.author.username %></p>
+<% end %>
 
-   <% if user_signed_in? %>
-     <!-- Add Comment Form -->
-     <form action="/comments/create" method="post">
-       <input type="hidden" name="photo_id" value="<%= @the_photo.id %>" />
-       <input type="hidden" name="fan_id"   value="<%= session.fetch("user_id") %>" />
+<% if user_signed_in? %>
+  <form action="/comments/create" method="post">
+    <input
+      type="hidden"
+      name="photo_id"
+      value="<%= @the_photo.id %>"
+    />
+    <input
+      type="hidden"
+      name="fan_id"
+      value="<%= current_user.id %>"
+    />
 
-       <label for="body_field">Comment</label>
-       <textarea id="body_field" name="body"></textarea>
+    <label for="body_field">Comment</label>
+    <textarea id="body_field" name="body"></textarea>
 
-       <button>Add comment</button>
-     </form>
-   <% end %>
+    <button>Add comment</button>
+  </form>
+<% end %>

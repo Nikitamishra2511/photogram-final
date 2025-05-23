@@ -15,7 +15,7 @@ class UsersController < ApplicationController
   end
 
   def feed
-    current_user = User.where({ :id => session.fetch("user_id") }).at(0)
+    current_user = User.where({ :id => value="<%= current_user.id %> }).at(0)
 
     # everyone I’m following (accepted)
     accepted_requests = FollowRequest.where({ :follower_id => current_user.id,
@@ -27,7 +27,7 @@ class UsersController < ApplicationController
   end
 
   def liked_photos
-    current_user = User.where({ :id => session.fetch("user_id") }).at(0)
+    current_user = User.where({ :id =>value="<%= current_user.id %> }).at(0)
 
     # photos I’ve liked
     my_likes    = Like.where({ :fan_id => current_user.id })
@@ -38,7 +38,7 @@ class UsersController < ApplicationController
   end
 
   def discover
-    current_user = User.where({ :id => session.fetch("user_id") }).at(0)
+    current_user = User.where({ :id => value="<%= current_user.id %> }).at(0)
 
     # photos liked by people I follow
     accepted_requests = FollowRequest.where({ :follower_id => current_user.id,
