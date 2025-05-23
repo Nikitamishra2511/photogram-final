@@ -1,21 +1,23 @@
-<h1>Photo by <%= @the_photo.user.username %></h1>
 <img src="<%= @the_photo.image.url %>" alt="Photo" />
 
-<p><%= @the_photo.caption %></p>
+<p>Caption: <%= @the_photo.caption %></p>
+<p>Added by: <%= @the_photo.user.username %></p>
+<p>Comments count: <%= @the_photo.comments.count %></p>
+<p>Likes count: <%= @the_photo.likes.count %></p>
 
-<h2>Comments (<%= @the_photo.comments.count %>)</h2>
+<h2>Comments</h2>
 <% @the_photo.comments.each do |comment| %>
-  <div>
-    <p><strong><%= comment.user.username %></strong></p>
-    <p><%= comment.content %></p>
-  </div>
+  <p><%= comment.body %> — <%= comment.author.username %></p>
 <% end %>
-<form action="/comments/create" method="post" class="mb-3">
-  <input type="hidden" name="photo_id" value="<%= @the_photo.id %>">
-  <div class="input-group">
-    <input name="body" type="text" class="form-control" placeholder="Add a comment...">
-    <button class="btn btn-outline-secondary">Comment</button>
-  </div>
+
+<form action="/comments/create" method="post">
+  <input type="hidden" name="photo_id" value="<%= @the_photo.id %>" />
+  <input type="hidden" name="fan_id"   value="<%= session.fetch("user_id") %>" />
+
+  <label for="body_field">Comment</label>
+  <textarea id="body_field" name="body"></textarea>
+
+  <button>Add comment</button>
 </form>
 
 <form action="/likes/create" method="post" class="mb-3">

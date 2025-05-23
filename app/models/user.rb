@@ -21,19 +21,21 @@
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+  devise(:database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable)
+
   def comments
-    Comment.where({ :fan_id => self.id })
+    matching_comments = Comment.where({ :author_id => self.id })
+    return matching_comments
   end
 
   def likes
-    Like.where({ :fan_id => self.id })
+    matching_likes = Like.where({ :fan_id => self.id })
+    return matching_likes
   end
 
   def photos
-    Photo.where({ :owner_id => self.id })
+    matching_photos = Photo.where({ :owner_id => self.id })
+    return matching_photos
   end
 end

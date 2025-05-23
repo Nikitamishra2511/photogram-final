@@ -1,12 +1,9 @@
-<h1>New Photo</h1>
-<form action="/photos/create" method="post">
-  <div class="mb-3">
-    <label for="image_field" class="form-label">Image URL:</label>
-    <input id="image_field" name="image" type="text" class="form-control">
-  </div>
-  <div class="mb-3">
-    <label for="caption_field" class="form-label">Caption:</label>
-    <input id="caption_field" name="caption" type="text" class="form-control">
-  </div>
-  <button type="submit" class="btn btn-success">Create</button>
+<form action="/photos/create" method="post" enctype="multipart/form-data">
+  <label for="image_field">Image</label>
+  <input id="image_field" type="file" name="image" />
+
+  <label for="caption_field">Caption</label>
+  <input id="caption_field" type="text" name="caption" />
+
+  <button>Add photo</button>
 </form>

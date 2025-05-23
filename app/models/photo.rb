@@ -12,17 +12,20 @@
 #  owner_id       :integer
 #
 class Photo < ApplicationRecord
+  mount_uploader(:image, ImageUploader)
+
   def user
-    matching_users = User.where({ id: self.owner_id })
-    the_user = matching_users.at(0)
-    return the_user
+    matching_users = User.where({ :id => self.owner_id })
+    return matching_users.at(0)
   end
 
   def comments
-    Comment.where({ photo_id: self.id })
+    matching_comments = Comment.where({ :photo_id => self.id })
+    return matching_comments
   end
 
   def likes
-    Like.where({ photo_id: self.id })
+    matching_likes = Like.where({ :photo_id => self.id })
+    return matching_likes
   end
 end
