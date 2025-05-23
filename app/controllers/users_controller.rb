@@ -19,40 +19,47 @@ class UsersController < ApplicationController
   end
 
   def feed
-    # Get all accepted follow requests for the signed-in user
-    accepted = FollowRequest.where({
-      :fan_id => current_user.id,
+    the_username   = params.fetch("username")
+    matching_users = User.where({ :username => the_username })
+    @the_user      = matching_users.at(0)
+
+    accepted       = FollowRequest.where({
+      :fan_id => @the_user.id,
       :status => "accepted"
     })
-
-    followee_ids = accepted.map { |fr| fr.recipient_id }
+    followee_ids   = accepted.map { |fr| fr.recipient_id }
 
     @list_of_photos = Photo.where({ :owner_id => followee_ids })
-
     render({ :template => "users/feed" })
   end
 
   def liked_photos
-    my_likes  = Like.where({ :fan_id => current_user.id })
-    photo_ids = my_likes.map { |like| like.photo_id }
+    the_username   = params.fetch("username")
+    matching_users = User.where({ :username => the_username })
+    @the_user      = matching_users.at(0)
 
-    @liked_photos = Photo.where({ :id => photo_ids })
+    my_likes       = Like.where({ :fan_id => @the_user.id })
+    photo_ids      = my_likes.map { |like| like.photo_id }
 
+    @liked_photos  = Photo.where({ :id => photo_ids })
     render({ :template => "users/liked_photos" })
   end
 
   def discover
-    accepted    = FollowRequest.where({
-      :fan_id => current_user.id,
+    the_username     = params.fetch("username")
+    matching_users   = User.where({ :username => the_username })
+    @the_user        = matching_users.at(0)
+
+    accepted         = FollowRequest.where({
+      :fan_id => @the_user.id,
       :status => "accepted"
     })
-    followee_ids = accepted.map { |fr| fr.recipient_id }
+    followee_ids     = accepted.map { |fr| fr.recipient_id }
 
-    their_likes = Like.where({ :fan_id => followee_ids })
-    liked_ids   = their_likes.map { |like| like.photo_id }.uniq
+    their_likes      = Like.where({ :fan_id => followee_ids })
+    liked_ids        = their_likes.map { |like| like.photo_id }.uniq
 
     @discovered_photos = Photo.where({ :id => liked_ids })
-
     render({ :template => "users/discover" })
   end
 

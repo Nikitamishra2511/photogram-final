@@ -6,8 +6,8 @@
 #  status       :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  fan_id       :integer
 #  recipient_id :integer
-#  sender_id    :integer
 #
 class FollowRequest < ApplicationRecord
 end

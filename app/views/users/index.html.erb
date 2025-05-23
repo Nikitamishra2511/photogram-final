@@ -1,31 +1,47 @@
-<h1>All Users</h1>
-<ul class="list-group">
-  <% @list_of_users.each do |u| %>
-    <li class="list-group-item">
-      <%= u.username %>
-      (<%= u.private ? "Private" : "Public" %>)
-      <a href="/users/<%= u.id %>">View Profile</a>
-    </li>
-  <% end %>
-
-
-  <table>
-  <tr>
-    <th>Username</th>
-    <th>Private?</th>
-    <th>Follow/Unfollow</th>
-  </tr>
-
-  <% @list_of_users.each do |user| %>
+<table>
+  <thead>
     <tr>
-      <td><%= user.username %></td>
-      <td><%= user.private ? "Yes" : "No" %></td>
-      <td>
-        <% if user_signed_in? && current_user.id != user.id %>
-          <!-- follow/unfollow logic here -->
-        <% end %>
-      </td>
+      <th>Username</th>
+      <th>Private?</th>
+      <% if user_signed_in? %>
+        <th>Follow/Unfollow</th>
+      <% end %>
     </tr>
-  <% end %>
+  </thead>
+
+  <tbody>
+    <% @list_of_users.each do |user| %>
+      <tr>
+        <td>
+          <a href="/users/<%= user.username %>">
+            <%= user.username %>
+          </a>
+        </td>
+        <td><%= user.private ? "Yes" : "No" %></td>
+
+        <% if user_signed_in? %>
+          <td>
+            <% if current_user.id != user.id %>
+              <% fr = FollowRequest.where({
+                    :fan_id       => current_user.id,
+                    :recipient_id => user.id
+                  }).at(0) %>
+
+              <% if fr.nil? %>
+                <form action="/follow_requests/create" method="post" style="display:inline">
+                  <input type="hidden" name="fan_id"       value="<%= current_user.id %>">
+                  <input type="hidden" name="recipient_id" value="<%= user.id %>">
+                  <button>Follow</button>
+                </form>
+              <% elsif fr.status == "accepted" %>
+                <a href="/delete_follow_request/<%= fr.id %>">Unfollow</a>
+              <% elsif fr.status == "pending" %>
+                Request sent — <a href="/delete_follow_request/<%= fr.id %>">Cancel</a>
+              <% end %>
+            <% end %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
 </table>
-</ul>
