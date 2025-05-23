@@ -2,15 +2,21 @@ class UsersController < ApplicationController
   skip_before_action(:authenticate_user!, { :only => [:index, :show] })
 
   def index
-    # …
+    matching_users = User.where({ })
+    @list_of_users = matching_users
+    render({ :template => "users/index" })
   end
 
   def show
-  the_username    = params.fetch("username")
-  matching_users  = User.where({ :username => the_username })
-  @the_user       = matching_users.at(0)
-  render({ :template => "users/show" })
-end
+    # your existing show logic…
+  end
+
+   def show
+    the_username   = params.fetch("username")
+    matching_users = User.where({ :username => the_username })
+    @the_user      = matching_users.at(0)
+    render({ :template => "users/show" })
+  end
 
   def feed
     # Get all accepted follow requests for the signed-in user

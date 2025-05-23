@@ -45,8 +45,8 @@ Rails.application.routes.draw do
     get("/users",     { :controller => "users", :action => "index" })
     get("/users/:username",{ :controller => "users", :action => "show" })
 
-    # Feed & Discovery (requires authentication in controller)
-    get("/feed",      { :controller => "photos", :action => "feed"      })
-    get("/discovery", { :controller => "photos", :action => "discovery" })
+    get("/users/:username/feed",         { :controller => "users", :action => "feed"         })
+get("/users/:username/liked_photos", { :controller => "users", :action => "liked_photos" })
+get("/users/:username/discover",     { :controller => "users", :action => "discover"     })
 
 end
