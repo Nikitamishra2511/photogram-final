@@ -1,8 +1,7 @@
-def index
-  @photos = Photo
-    .joins(:owner)
-    .where({ :users => { :private => false } })
-    .order({ :created_at => :desc })
+class HomeController < ApplicationController
+   skip_before_action(:authenticate_user!, { :only => [:home] })
 
-  render({ :template => "home/index" })
-end
+   def home
+     render({ :template => "pages/home" })
+   end
+ end

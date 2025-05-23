@@ -1,15 +1,15 @@
+# == Schema Information
+#
+# Table name: photos
+#
+#  id             :bigint           not null, primary key
+#  caption        :text
+#  comments_count :integer
+#  image          :string
+#  likes_count    :integer
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  owner_id       :integer
+#
 class Photo < ApplicationRecord
-  def user
-    User.where({ :id => self.user_id }).at(0)
-  end
-
-  def comments
-    Comment.where({ :photo_id => self.id })
-  end
-
-  def likes
-    Like.where({ :photo_id => self.id })
-  end
 end
-
-
