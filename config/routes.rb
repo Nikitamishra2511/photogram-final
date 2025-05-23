@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   devise_for :users
-
+get("/", { :controller => "pages", :action => "home" })
   # Photos
   get("/photos",                        { :controller => "photos",            :action => "index" })
   get("/photos/new",                    { :controller => "photos",            :action => "new"   })
