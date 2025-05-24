@@ -1,7 +1,7 @@
 <h1><%= @the_user.username %>'s Profile</h1>
 
 <p>Email: <%= @the_user.email %></p>
-<p>Private: <%= @the_user.private %></p>
+<p>Private: <%= @the_user.private? %></p>
 <p>Comments count: <%= @the_user.comments.count %></p>
 <p>Likes count: <%= @the_user.likes.count %></p>
 
@@ -78,15 +78,6 @@
 <% end %>
 
 <p><a href="/users">Back to Users</a></p>
-
-
-
-
-
-
-
-
-
 
 <h2>Photos (<%= @the_user.photos.count %>)</h2>
 <% @the_user.photos.each do |photo| %>
