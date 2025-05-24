@@ -1,16 +1,31 @@
-  <h1>Edit your profile</h1>
+<h1>Edit your profile</h1>
 
-   <form id="edit_user" action="/users" method="post">
-     <label for="username_field">Username</label><br>
-     <input
-       id="username_field"
-       type="text"
-       name="username"
-       value="<%= current_user.username %>"
-     ><br>
+<form
+  id="edit_user"
+  action="<%= user_registration_path %>"
+  method="post"
+>
+  <input type="hidden" name="_method" value="patch">
+  <input
+    type="hidden"
+    name="authenticity_token"
+    value="<%= form_authenticity_token %>"
+  >
 
-     <label for="current_pw_field">Current password</label><br>
-     <input id="current_pw_field" type="password" name="current_password"><br>
+  <label for="username_field">Username</label><br>
+  <input
+    id="username_field"
+    type="text"
+    name="user[username]"
+    value="<%= current_user.username %>"
+  ><br>
 
-     <input type="submit" value="Update">
-   </form>
+  <label for="current_pw_field">Current password</label><br>
+  <input
+    id="current_pw_field"
+    type="password"
+    name="user[current_password]"
+  ><br>
+
+  <input type="submit" value="Update">
+</form>

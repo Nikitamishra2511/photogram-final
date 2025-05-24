@@ -10,57 +10,58 @@
 
 <h2>Comments</h2>
 <% @the_photo.comments.each do |c| %>
-  <p><%= c.body %> — <%= c.author.username %></p>
+  <p>
+    <%= c.body %> — <%= c.author.username %>
+  </p>
 <% end %>
 
 <% if user_signed_in? %>
   <!-- Add Comment Form -->
   <form action="/comments/create" method="post">
-    <input
-      type="hidden"
-      name="photo_id"
-      value="<%= @the_photo.id %>"
-    />
-    <input
-      type="hidden"
-      name="fan_id"
-      value="<%= current_user.id %>"
-    />
-
-    <label for="body_field">Comment</label>
-    <textarea id="body_field" name="body"></textarea>
-
+    <input type="hidden" name="photo_id"  value="<%= @the_photo.id %>" />
+    <input type="hidden" name="author_id" value="<%= current_user.id %>" />
+    <label for="body_field">Comment</label><br>
+    <textarea id="body_field" name="body"></textarea><br>
     <button>Add comment</button>
   </form>
 
-  <!-- Delete Photo Link -->
+  <!-- Delete this photo -->
   <% if current_user.id == @the_photo.owner_id %>
-    <a href="/delete_photo/<%= @the_photo.id %>">
-      Delete this photo
-    </a>
+    <p>
+      <a href="/delete_photo/<%= @the_photo.id %>">Delete this photo</a>
+    </p>
+
+    <!-- Update photo form -->
+    <h2>Update photo</h2>
+    <form
+      action="/photos/<%= @the_photo.id %>/update"
+      method="post"
+      enctype="multipart/form-data"
+    >
+      <label for="image_field">Image</label><br>
+      <input id="image_field" type="file" name="image"><br>
+      <label for="caption_field">Caption</label><br>
+      <input
+        id="caption_field"
+        type="text"
+        name="caption"
+        value="<%= @the_photo.caption %>"
+      ><br>
+      <button>Update photo</button>
+    </form>
   <% end %>
 
   <!-- Like / Unlike -->
-  <% existing_like = 
-       Like.where({ :fan_id => current_user.id,
-                    :photo_id => @the_photo.id }).at(0) %>
+  <% existing_like = @the_photo.likes.where({ :fan_id => current_user.id }).at(0) %>
   <% if existing_like.nil? %>
     <form action="/likes/create" method="post">
-      <input
-        type="hidden"
-        name="photo_id"
-        value="<%= @the_photo.id %>"
-      />
-      <input
-        type="hidden"
-        name="fan_id"
-        value="<%= current_user.id %>"
-      />
+      <input type="hidden" name="photo_id" value="<%= @the_photo.id %>" />
+      <input type="hidden" name="fan_id"   value="<%= current_user.id %>" />
       <button>Like</button>
     </form>
   <% else %>
-    <a href="/delete_like/<%= existing_like.id %>">
-      Unlike
-    </a>
+    <p>
+      <a href="/delete_like/<%= existing_like.id %>">Unlike</a>
+    </p>
   <% end %>
 <% end %>

@@ -1,36 +1,94 @@
 <h1><%= @the_user.username %>'s Profile</h1>
+
 <p>Email: <%= @the_user.email %></p>
-<p>Private: <%= @the_user.private ? "Yes" : "No" %></p>
+<p>Private: <%= @the_user.private %></p>
 <p>Comments count: <%= @the_user.comments.count %></p>
 <p>Likes count: <%= @the_user.likes.count %></p>
 
-<nav>
-  <a href="/users/<%= @the_user.username %>/feed">Feed</a> |
-  <a href="/users/<%= @the_user.username %>/liked_photos">Liked photos</a> |
-  <a href="/users/<%= @the_user.username %>/discover">Discover</a>
+<nav class="my-3">
+  <a href="/users/<%= @the_user.id %>/feed">Feed</a> |
+  <a href="/users/<%= @the_user.id %>/liked_photos">Liked photos</a> |
+  <a href="/users/<%= @the_user.id %>/discover">Discover</a>
 </nav>
 
-<%# ——— Add Follow/Unfollow here ——— %>
 <% if user_signed_in? && current_user.id != @the_user.id %>
   <% fr = FollowRequest.where({
-        :fan_id       => current_user.id,
-        :recipient_id => @the_user.id
-      }).at(0) %>
+       sender_id:    current_user.id,
+       recipient_id: @the_user.id
+     }).at(0) %>
 
   <% if fr.nil? %>
-    <form action="/follow_requests/create" method="post">
-      <input type="hidden" name="fan_id"       value="<%= current_user.id %>" />
-      <input type="hidden" name="recipient_id" value="<%= @the_user.id %>"   />
+    <form action="/follow_requests/create" method="post" style="display:inline">
+      <input type="hidden" name="sender_id"    value="<%= current_user.id %>">
+      <input type="hidden" name="recipient_id" value="<%= @the_user.id      %>">
       <button>Follow</button>
     </form>
   <% elsif fr.status == "accepted" %>
     <a href="/delete_follow_request/<%= fr.id %>">Unfollow</a>
+  <% elsif fr.status == "pending" %>
+    Request sent — <a href="/delete_follow_request/<%= fr.id %>">Cancel</a>
   <% end %>
 <% end %>
 
+<% if @the_user.private %>
+  <h2>Pending follow requests</h2>
+  <% FollowRequest.where({
+       recipient_id: @the_user.id,
+       status:       "pending"
+     }).each do |req| %>
+    <% fan = User.where({ id: req.sender_id }).at(0) %>
+    <p><%= fan.username %></p>
+  <% end %>
+<% end %>
 
-<h2>Photos</h2>
+<p>
+  Followers:
+  <%= FollowRequest.where({
+        recipient_id: @the_user.id,
+        status:       "accepted"
+      }).count %>
+</p>
 
+<p>
+  Following:
+  <%= FollowRequest.where({
+        sender_id: @the_user.id,
+        status:    "accepted"
+      }).count %>
+</p>
+
+<h2>Photos (<%= @the_user.photos.count %>)</h2>
+<% @the_user.photos.each do |photo| %>
+  <div style="margin-bottom:20px; border:1px solid #ccc; padding:10px;">
+    <a href="/photos/<%= photo.id %>">
+      <img
+        src="<%= photo.image.url %>"
+        alt="Photo"
+        style="max-width:100%; height:auto;"
+      >
+    </a>
+
+    <p>Caption: <%= photo.caption %></p>
+    <p>Likes:   <%= photo.likes.count %></p>
+    <p>Comments:<%= photo.comments.count %></p>
+    <p>Posted <%= time_ago_in_words(photo.created_at) %> ago</p>
+
+    <a href="/photos/<%= photo.id %>">Show details</a>
+  </div>
+<% end %>
+
+<p><a href="/users">Back to Users</a></p>
+
+
+
+
+
+
+
+
+
+
+<h2>Photos (<%= @the_user.photos.count %>)</h2>
 <% @the_user.photos.each do |photo| %>
   <div class="user-photo">
     <a href="/photos/<%= photo.id %>">

@@ -1,26 +1,20 @@
-<h1><%= @user.username %>'s Feed</h1>
+<h1><%= @the_user.username %>'s Feed</h1>
 
-<% @photos.each do |photo| %>
-  <%# only show photos from people this user is following %>
-  <%# (your controller should already limit @photos to those) %>
-
+<% @list_of_photos.each do |photo| %>
   <div style="margin-bottom:30px; border-bottom:1px solid #ccc; padding:10px;">
-    <% if photo.image.present? %>
-      <a href="/photos/<%= photo.id %>">
-        <img
-          src="<%= photo.image_identifier %>"
-          alt="Photo"
-          style="max-width:100%; height:auto;"
-        >
-      </a>
-    <% else %>
-      <p><em>No image available</em></p>
-    <% end %>
+    <a href="/photos/<%= photo.id %>">
+      <img
+        src="<%= photo.image.url %>"
+        alt="Photo"
+        style="max-width:100%; height:auto;"
+      >
+    </a>
 
     <p>
       <strong>Owner:</strong>
-      <a href="/users/<%= photo.owner.username %>">
-        <%= photo.owner.username %>
+      <% owner = User.where({ id: photo.owner_id }).at(0) %>
+      <a href="/users/<%= owner.id %>">
+        <%= owner.username %>
       </a>
     </p>
 

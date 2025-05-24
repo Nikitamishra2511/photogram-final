@@ -17,22 +17,25 @@
         <td>
           <a href="/users/<%= user.username %>"><%= user.username %></a>
         </td>
-        <td><%= user.private ? "Yes" : "No" %></td>
+
+        <td>
+          <%= user.private? ? "Yes" : "No" %>
+        </td>
 
         <% if user_signed_in? %>
           <td>
             <% if current_user.id != user.id %>
               <% fr = FollowRequest.where({
-      :sender_id    => current_user.id,
-      :recipient_id => user.id
-    }).at(0) %>
+                :sender_id    => current_user.id,
+                :recipient_id => user.id
+              }).at(0) %>
 
               <% if fr.nil? %>
                 <form action="/follow_requests/create" method="post" style="display:inline">
-  <input type="hidden" name="sender_id"    value="<%= current_user.id %>">
-  <input type="hidden" name="recipient_id" value="<%= user.id %>">
-  <button>Follow</button>
-</form>
+                  <input type="hidden" name="sender_id"    value="<%= current_user.id %>">
+                  <input type="hidden" name="recipient_id" value="<%= user.id %>">
+                  <button>Follow</button>
+                </form>
               <% elsif fr.status == "accepted" %>
                 <a href="/delete_follow_request/<%= fr.id %>">Unfollow</a>
               <% elsif fr.status == "pending" %>

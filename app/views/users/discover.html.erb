@@ -1,30 +1,26 @@
-<h1><%= @user.username %>'s Discover</h1>
+<h1><%= @the_user.username %>'s Discover</h1>
 
-<% @photos.each do |photo| %>
-  <% next if photo.owner.private %>
-
+<% @discovered_photos.each do |photo| %>
   <div style="margin-bottom:30px; border-bottom:1px solid #ccc; padding:10px;">
-    <% if photo.image.present? %>
-      <a href="/photos/<%= photo.id %>">
-        <img
-          src="<%= photo.image_identifier %>"
-          alt="Photo"
-          style="max-width:100%; height:auto;"
-        >
-      </a>
-    <% else %>
-      <p><em>No image available</em></p>
-    <% end %>
+    <a href="/photos/<%= photo.id %>">
+      <img
+        src="<%= photo.image.url %>"
+        alt="Photo"
+        style="max-width:100%; height:auto;"
+      >
+    </a>
 
     <p>
       <strong>Owner:</strong>
-      <a href="/users/<%= photo.owner.username %>">
-        <%= photo.owner.username %>
+      <% owner = User.where({ :id => photo.owner_id }).at(0) %>
+      <a href="/users/<%= owner.id %>">
+        <%= owner.username %>
       </a>
     </p>
+
     <p><strong>Caption:</strong> <%= photo.caption %></p>
     <p><strong>Posted:</strong> <%= time_ago_in_words(photo.created_at) %> ago</p>
-    <p><strong>Likes:</strong> <%= photo.likes_count %></p>
-    <p><strong>Comments:</strong> <%= photo.comments_count %></p>
+    <p><strong>Likes:</strong> <%= photo.likes.count %></p>
+    <p><strong>Comments:</strong> <%= photo.comments.count %></p>
   </div>
 <% end %>

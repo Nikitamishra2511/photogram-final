@@ -15,7 +15,10 @@ class CommentsController < ApplicationController
     the_comment.body      = params.fetch("body")
     the_comment.save
 
-    redirect_to("/photos/" + the_comment.photo_id.to_s)
+      return redirect_to(
+      "/photos/#{ the_comment.photo_id }",
+      { :notice => "Comment created successfully" }
+    )
   end
 
   def show
