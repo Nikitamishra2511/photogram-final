@@ -462,23 +462,26 @@ end
 
 describe "/photos/[ID] - Unlike link" do
   it "automatically associates like with signed in user", points: 1 do
-    first_user = User.new
-    first_user.password = "password"
-    first_user.username = "alice"
-    first_user.email = "alice@example.com"
-    first_user.save
+    first_user = User.new(
+      password: "password",
+      username: "alice",
+      email: "alice@example.com"
+    )
+    expect(first_user.save).to be true, "User failed to save: #{first_user.errors.full_messages.join(', ')}"
 
-    photo = Photo.new
-    photo.image = File.open(Rails.root + "spec/support/kirb.gif")
-    photo.caption = "Some test caption #{Time.now.to_i}"
-    photo.owner_id = first_user.id
-    photo.likes_count = 1
-    photo.save
+    photo = Photo.new(
+      image: File.open(Rails.root.join("spec/support/kirb.gif")),
+      caption: "Some test caption #{Time.now.to_i}",
+      owner_id: first_user.id,
+      likes_count: 1
+    )
+    expect(photo.save).to be true, "Photo failed to save: #{photo.errors.full_messages.join(', ')}"
 
-    like = Like.new
-    like.fan_id = first_user.id
-    like.photo_id = photo.id
-    like.save
+    like = Like.new(
+      fan_id: first_user.id,
+      photo_id: photo.id
+    )
+    expect(like.save).to be true, "Like failed to save: #{like.errors.full_messages.join(', ')}"
 
     visit "/users/sign_in"
     
@@ -487,6 +490,13 @@ describe "/photos/[ID] - Unlike link" do
       fill_in "Password", with: first_user.password
       find('input[type="submit"]').click
     end
+
+    # You might also want to visit the photo page and click the unlike link here
+    # visit "/photos/#{photo.id}"
+    # click_link "Unlike"
+  end
+end
+
     
     visit "/photos/#{photo.id}"
     old_likes_count = photo.likes_count
