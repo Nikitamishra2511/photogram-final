@@ -78,20 +78,3 @@
 <% end %>
 
 <p><a href="/users">Back to Users</a></p>
-
-<h2>Photos (<%= @the_user.photos.count %>)</h2>
-<% @the_user.photos.each do |photo| %>
-  <div class="user-photo">
-    <a href="/photos/<%= photo.id %>">
-      <img src="<%= photo.image.url %>" alt="Photo" />
-    </a>
-
-    <p>Caption: <%= photo.caption %></p>
-    <p>Likes: <%= photo.likes.count %></p>
-    <p>Posted <%= time_ago_in_words(photo.created_at) %> ago</p>
-
-    <a href="/photos/<%= photo.id %>">Show details</a>
-  </div>
-<% end %>
-
-<a href="/users">Back to Users</a>
